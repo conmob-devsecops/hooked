@@ -5,6 +5,6 @@
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/conmob-devsecops/git-hooks/refs/heads/main/install.sh?token=GHSAT0AAAAAADJHMQFWO4KSHKCDQF6DOOQI2FXB5CQ | sh
+curl -fsSL https://raw.githubusercontent.com/conmob-devsecops/git-hooks/refs/heads/main/install.sh|sh
 ```
 
