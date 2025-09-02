@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Copyright (C) 2025 T-Systems International GmbH.
+#
+# You can find the compulsory statement on:
+# https://www.t-systems.com/de/en/compulsory-statement
+#
+# All rights, including licensing, inspection, modification and sharing of
+# software and source code, reserved.
+
+set -e
+
+check_cmd() {
+  local cmd=$1
+  if command -v "$cmd" &>/dev/null; then
+    return 0
+  else
+    echo "⛔️ $cmd is not available"
+    return 1
+  fi
+}
+
+check_cmd "python3"
+check_cmd "pre-commit"
+
+echo "🚀 Running global pre-commit ..."
+pre-commit hook-impl \
+  --config ~/.config/git/core/pre-commit-config.yml \
+  --hook-type=pre-commit \
+  --hook-dir="$(pwd)/.git/hooks" \
+  -- "$@"
+
+if [ -f ".pre-commit-config.yaml" ]; then
+  echo "🚀 Running local pre-commit ..."
+  pre-commit hook-impl \
+    --config=.pre-commit-config.yaml \
+    --hook-type=pre-commit \
+    --hook-dir="$(pwd)/.git/hooks" \
+    -- "$@"
+fi

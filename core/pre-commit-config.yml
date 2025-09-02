@@ -1,0 +1,25 @@
+repos:
+  # detect if git author email doesn't match DTAG domain
+  - repo: local
+    hooks:
+      - id: check-email-domain
+        name: Check DTAG email domain
+        # TODO: get rid of local repo entirly
+        entry: /Users/<CHANGEME>/.config/git/core/check-email-domain.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        fail_fast: true
+
+  # detect secrets with Yelp's detect-secrets
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        exclude: package.lock.check-json
+
+  # detect secrets with gitleaks
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.28.0
+    hooks:
+      - id: gitleaks
