@@ -11,7 +11,7 @@ set -e
 
 mkdir -p ~/.config
 mv ~/.config/git{,.bak}
-git clone https://github.com/conmob-devops/git-hooks ~/.config/git
+git clone https://github.com/conmob-devsecops/git-hooks ~/.config/git
 git config --global core.hooksPath ~/.config/git/core/hooks
 
 # install pre-commit if needed
