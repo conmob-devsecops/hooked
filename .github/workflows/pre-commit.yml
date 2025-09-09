@@ -1,0 +1,46 @@
+name: Pre-commit
+on:
+  push:
+    tags: ["*"]
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  merge_group:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
+
+jobs:
+  pre-commit:
+    runs-on: ["ubuntu-latest"]
+    env:
+      PRE_COMMIT_COLOR: always
+    steps:
+      - id: setup_python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      # Merge queue and push-to-main workflows are ok with a shallow clone
+      - if: github.event_name != 'pull_request'
+        uses: actions/checkout@v5
+
+      # For pull requests, fetch all the commits that are part of the PR
+      # so we can run pre-commit only on what's changed
+      - if: github.event_name == 'pull_request'
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: $(( ${{ github.event.pull_request.commits }} + 1 ))
+
+      - run: sudo pip3 install pre-commit
+        shell: bash
+
+      - if: github.event_name == 'pull_request'
+        name: Run pre-commit on PR
+        run: pre-commit run --show-diff-on-failure --color=always --from-ref ${{ github.event.pull_request.base.sha }} --to-ref ${{ github.event.pull_request.head.sha }}
+        shell: bash
+
+      - if: github.event_name != 'pull_request'
+        name: Run pre-commit on main
+        run: pre-commit run --show-diff-on-failure --color=always --all-files
+        shell: bash

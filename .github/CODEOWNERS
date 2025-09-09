@@ -1,0 +1,15 @@
+# This file defines CODEOWNERS by applying rules almost similar to .gitignore.
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# for more information.
+# Note: Last matching pattern takes precedence!
+
+# General
+*     @conmob-devsecops/tools-team
+
+# Dotfiles and repo root files
+.*                           @conmob-devsecops/tools-team
+/*                           @conmob-devsecops/tools-team
+/.pre-commit-config.yaml     @conmob-devsecops/backplane
+
+# GitHub workflows
+/.github/worflows      @conmob-devsecops/backplane
