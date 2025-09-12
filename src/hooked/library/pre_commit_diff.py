@@ -17,17 +17,21 @@ def pre_commit_diff(file_path: str) -> str:
         hooked_pre_commit = safe_load(f)
 
     repo_pre_commit_config = os.path.join(file_path)
-    with open(repo_pre_commit_config) as f:
-        repo_pre_commit = safe_load(f)
+    try:
+        with open(repo_pre_commit_config) as f:
+            repo_pre_commit = safe_load(f)
 
-    hooked_ids = set()
-    repo_ids = set()
+        hooked_ids = set()
+        repo_ids = set()
 
-    for repo in hooked_pre_commit.get('repos', []):
-        hooked_ids.update({hook.get('id') for hook in repo.get('hooks', [])})
+        for repo in hooked_pre_commit.get('repos', []):
+            hooked_ids.update({hook.get('id') for hook in repo.get('hooks', [])})
 
-    for repo in repo_pre_commit.get('repos', []):
-        repo_ids.update({hook.get('id') for hook in repo.get('hooks', [])})
+        for repo in repo_pre_commit.get('repos', []):
+            repo_ids.update({hook.get('id') for hook in repo.get('hooks', [])})
 
-    common_ids = hooked_ids.intersection(repo_ids)
-    return ','.join(common_ids)
+        common_ids = hooked_ids.intersection(repo_ids)
+        return ','.join(common_ids)
+
+    except FileNotFoundError:
+        return ''

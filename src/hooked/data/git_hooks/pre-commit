@@ -12,12 +12,17 @@ echo "[hooked] Running global pre-commit checks..."
 # --- Your global checks go here ---
 pre_commit_version=$(pre-commit --version)
 echo "[hooked] pre-commit version: $pre_commit_version"
-pre-commit autoupdate
 
-duplicated_hooks=$(hooked list-duplicated-hooks "${REPO_ROOT}/.pre_commit_config.yaml")
+# FIXME: auto update currently broken for some reason
+#(
+#  cd ~/.config/hooked/config || exit 1
+#  pre-commit autoupdate --config ~/.config/hooked/config/.pre-commit-config.yaml
+#)
+
+duplicated_hooks=$(hooked list-duplicate-hooks "${REPO_ROOT}/.pre_commit_config.yaml")
 echo "[hooked] Duplicated hooks in repo: $duplicated_hooks"
 
-internal SKIP="${duplicated_hooks}"
+export SKIP="${duplicated_hooks}"
 # shellcheck disable=SC2046
 pre-commit run --config ~/.config/hooked/config/.pre-commit-config.yaml --files \
   $(git diff --cached --name-only --diff-filter=ACM)
