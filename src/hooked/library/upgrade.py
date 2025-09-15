@@ -131,7 +131,7 @@ def self_upgrade(reset=False, pin=False, switch: str | None = None) -> int:
     info = get_install_info()
 
     if not info.url:
-        raise RuntimeError(f"Installation URL must be specified")
+        raise RuntimeError('Installation URL must be specified')
 
     if not info.is_vcs or info.url.startswith('file://'):
         raise RuntimeError('Non-Git installation of hooked detected; remove and re-install via Git repository.')

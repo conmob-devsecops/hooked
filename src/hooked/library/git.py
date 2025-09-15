@@ -7,7 +7,7 @@ def git_set_global_hook_path(hooks_dir: str) -> int:
 
 def git_unset_global_hook_path() -> int:
     """Unset the global git hooks path."""
-    cmd = f"git config --unset core.hooksPath"
+    cmd = 'git config --unset core.hooksPath'
     return subprocess.call(cmd.split())
 
 def git_set_template_dir(template_dir: str) -> int:
@@ -17,7 +17,7 @@ def git_set_template_dir(template_dir: str) -> int:
 
 def git_unset_template_dir() -> int:
     """Unset the global git template directory."""
-    cmd = f"git config --global --unset init.templateDir"
+    cmd = 'git config --global --unset init.templateDir'
     return subprocess.call(cmd.split())
 
 def git_get_tags(url: str) -> list[tuple[str, str]]:
