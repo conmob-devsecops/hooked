@@ -111,9 +111,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         logger.debug('Updating hooked ruleset...')
         update_config_git_repo(base_dir)
 
-        get_config_git_repo(base_dir, args.rules, args.branch)
-        logger.debug('Pre-commit config installed.')
-
         hooks_dir = create_hooks_dir(base_dir)
         templates_dir = create_git_template_dir(base_dir)
         copy_git_hooks('hooked.data.git_hook_templates', templates_dir)
