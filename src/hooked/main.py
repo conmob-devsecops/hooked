@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import sys
 from collections.abc import Sequence
+from datetime import timedelta, datetime
 
-from hooked import __version__
+from hooked import __version__, __upgrade_interval_seconds__
 from hooked.library.cli import cmd_parser
 from hooked.library.config import get_config_git_repo, update_config_git_repo
 from hooked.library.files import (
@@ -22,7 +23,11 @@ from hooked.library.git import (
 )
 from hooked.library.logger import logger
 from hooked.library.pre_commit_diff import pre_commit_diff
-from hooked.library.upgrade import self_upgrade
+from hooked.library.upgrade import (
+    self_upgrade,
+    get_last_upgrade_timestamp,
+    set_last_upgrade_timestamp,
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -83,6 +88,38 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.cmd == 'upgrade':
         return self_upgrade(reset=args.reset, freeze=args.freeze, rev=args.rev)
+
+    if args.cmd == 'cron':
+        logger.debug('Running hooked cron job...')
+
+        base_dir = get_base_dir()
+
+        last_run = get_last_upgrade_timestamp()
+        now = datetime.now()
+        delta = timedelta(seconds=__upgrade_interval_seconds__)
+        if last_run and now - last_run < delta:
+            logger.debug(
+                'Last upgrade was %s, skipping upgrade (interval %s)', last_run, delta
+            )
+            return 0
+
+        set_last_upgrade_timestamp()
+
+        logger.debug('Upgrading hooked installation...')
+        self_upgrade()
+
+        logger.debug('Updating hooked ruleset...')
+        update_config_git_repo(base_dir)
+
+        get_config_git_repo(base_dir, args.rules, args.branch)
+        logger.debug('Pre-commit config installed.')
+
+        hooks_dir = create_hooks_dir(base_dir)
+        templates_dir = create_git_template_dir(base_dir)
+        copy_git_hooks('hooked.data.git_hook_templates', templates_dir)
+        copy_git_hooks('hooked.data.git_hooks', hooks_dir)
+
+        return 0
 
     if args.cmd == 'uninstall':
         logger.debug('Uninstalling hooked...')

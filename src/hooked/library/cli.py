@@ -74,6 +74,13 @@ def cmd_parser() -> argparse.ArgumentParser:
         help='Switch to given branch/tag/sha and install from there',
     )
 
+    # cron subcommand
+    cmd_cron = sub.add_parser(
+        'cron',
+        help='Serves as entrypoint to auto-update the ruleset and upgrade hooked itself',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
     # version subcommand
     sub.add_parser(
         'version',

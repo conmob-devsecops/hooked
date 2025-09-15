@@ -5,14 +5,17 @@ import json
 import re
 import subprocess
 import sys
+import os
+from datetime import datetime
 from dataclasses import dataclass
 
 from packaging.version import Version, InvalidVersion
 
 from .logger import logger
 
-from hooked import __pkg_name__
+from hooked import __pkg_name__, __upgrade_interval_seconds__
 from .git import git_get_tags, git_get_last_branch_commit
+from .files import get_base_dir
 
 SEMVER_TAG_RE = re.compile(r'^v?\d+\.\d+\.\d+([.-].+)?$')
 SHA_RE = re.compile(r'^[0-9a-f]{7,40}$', re.IGNORECASE)
@@ -56,7 +59,7 @@ def get_install_info() -> InstallInfo:
             install_info.is_vcs = True
             install_info.requested_revision = vcs.get('requested_revision')
             install_info.commit = vcs.get('commit_id')
-    except FileNotFoundError:
+    except TypeError:
         raise RuntimeError(
             'Could not find installation metadata; was hooked installed via Git?'
         )
@@ -191,3 +194,27 @@ def self_upgrade(reset=False, freeze=False, rev: str | None = None) -> int:
     logger.debug('Specification: %s', spec)
     pip_args.append(spec)
     return run_pip(*pip_args)
+
+
+def get_last_upgrade_timestamp() -> datetime | None:
+    """Reads last upgrade timestamp from hooked config directory"""
+
+    ts_file = os.path.join(get_base_dir(), 'last_upgrade.txt')
+
+    try:
+        with open(ts_file, encoding='utf-8') as f:
+            ts = f.read().strip()
+            ts = datetime.fromisoformat(ts)
+            return ts
+    except FileNotFoundError:
+        return None
+
+
+def set_last_upgrade_timestamp() -> None:
+    """Writes last upgrade timestamp to hooked config directory"""
+
+    ts_file = os.path.join(get_base_dir(), 'last_upgrade.txt')
+    ts = datetime.now().isoformat()
+
+    with open(ts_file, 'w', encoding='utf-8') as f:
+        f.write(ts)
