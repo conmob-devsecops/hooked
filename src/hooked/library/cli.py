@@ -41,13 +41,13 @@ def cmd_parser() -> argparse.ArgumentParser:
         help='Path to the .pre-commit-config.yaml file',
     )
 
-    # update subcommand
-    cmd_update = sub.add_parser(
-        'update',
-        help='update hooked ruleset',
+    # update rules subcommand
+    cmd_update_rules = sub.add_parser(
+        'update-rules',
+        help='update hooked rule set',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    cmd_update.add_argument(
+    cmd_update_rules.add_argument(
         '--force',
         action='store_true',
         default=False,
@@ -72,6 +72,12 @@ def cmd_parser() -> argparse.ArgumentParser:
         type=str,
         nargs='?',
         help='Switch to given branch/tag/sha and install from there',
+    )
+    cmd_upgrade.add_argument(
+        '--cron',
+        action='store_true',
+        default=False,
+        help='Indicates that this upgrade is triggered by the periodic check',
     )
 
     # cron subcommand

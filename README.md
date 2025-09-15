@@ -43,6 +43,35 @@ python -m hooked [...]
 `hooked` automatically configures your local environment to use the global git hooks and takes about installing
 local `pre-commit` hooks if repository contains a valid `.pre-commit-config.yaml` file.
 
+## Keeping up to date
+
+### Rules
+
+To update the ruleset repository, run:
+
+```bash
+hooked update-rules
+```
+
+### Hooked
+
+To update `hooked` itself, run:
+
+```bash
+pip install --no-cache-dir  --force-reinstall  git+https://github.com/conmob-devsecops/hooked.git@test/installer#
+```
+
+(Same command as installation)
+
+Or you can the built-in update command, see `--help` for more information:
+
+```bash
+hooked ugrade
+```
+
+`hooked` internally runs `hooked upgrade --cron` from time to time to check for updates, so you don't have to worry about
+it. If there are newer versions available, it will automatically update itself and the ruleset repository.
+
 ## Uninstallation
 
 To uninstall `hooked` and remove the global git hooks, run:

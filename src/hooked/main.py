@@ -74,22 +74,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         sys.stdout.flush()
         return 0
 
-    if args.cmd == 'update':
-        logger.debug('Updating hooked...')
+    if args.cmd == 'update-rules':
+        logger.debug('Updating hooked rule set...')
 
         base_dir = get_base_dir()
         update_config_git_repo(base_dir)
-        logger.debug('Pre-commit config updated.')
+        logger.debug('Rule set updated.')
 
         return 0
 
     if args.cmd == 'upgrade' and args.freeze and not args.rev:
         parser.error('--freeze can only be used with explicit revision argument')
 
-    if args.cmd == 'upgrade':
-        return self_upgrade(reset=args.reset, freeze=args.freeze, rev=args.rev)
-
-    if args.cmd == 'cron':
+    if args.cmd == 'upgrade' and args.cron:
         logger.debug('Running hooked cron job...')
 
         base_dir = get_base_dir()
@@ -117,6 +114,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         copy_git_hooks('hooked.data.git_hooks', hooks_dir)
 
         return 0
+
+    if args.cmd == 'upgrade':
+        return self_upgrade(reset=args.reset, freeze=args.freeze, rev=args.rev)
 
     if args.cmd == 'uninstall':
         logger.debug('Uninstalling hooked...')
