@@ -16,16 +16,19 @@ echo "[hooked] pre-commit version: $pre_commit_version"
 # FIXME: auto update currently broken for some reason
 #(
 #  cd ~/.config/hooked/config || exit 1
-#  pre-commit autoupdate --config ~/.config/hooked/config/.pre-commit-config.yaml
+#  pre-commit autoupdate
 #)
 
-duplicated_hooks=$(hooked list-duplicate-hooks "${REPO_ROOT}/.pre_commit_config.yaml")
+duplicated_hooks=$(hooked list-duplicate-hooks "${REPO_ROOT}/.pre-commit-config.yaml")
 echo "[hooked] Duplicated hooks in repo: $duplicated_hooks"
 
 export SKIP="${duplicated_hooks}"
 # shellcheck disable=SC2046
 pre-commit run --config ~/.config/hooked/config/.pre-commit-config.yaml --files \
   $(git diff --cached --name-only --diff-filter=ACM)
+
+# this need to be unset so that is not propagated to local hooks
+unset SKIP
 
 echo "[hooked] Finished running global hooks..."
 

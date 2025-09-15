@@ -33,8 +33,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         logger.info(f"hooked version {__version__}")
         return 0
 
-    if args.cmd == 'init':
-        logger.debug('Initializing hooked...')
+    if args.cmd == 'install':
+        logger.debug('Installing hooked...')
 
         base_dir = get_base_dir()
         create_base_dir(base_dir)
@@ -64,7 +64,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.cmd == 'list-duplicate-hooks':
         path = args.path
         diff = pre_commit_diff(path[0])
-        print(diff, end='', flush=True, file=sys.stdout)
+        sys.stdout.write(diff)
+        sys.stdout.flush()
         return 0
 
     if args.cmd == 'update':

@@ -9,20 +9,20 @@ def cmd_parser() -> argparse.ArgumentParser:
     )
     sub = parser.add_subparsers(dest='cmd')
 
-    # init subcommand
-    cmd_init = sub.add_parser(
-        'init',
+    # install subcommand
+    cmd_install = sub.add_parser(
+        'install',
         help='install hooked into your system',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    cmd_init.add_argument(
+    cmd_install.add_argument(
         '--rules',
         type=str,
         required=True,
         help='Git repository URL or local path to the ruleset',
     )
-    cmd_init.add_argument(
+    cmd_install.add_argument(
         '--branch',
         type=str,
         default='main',
