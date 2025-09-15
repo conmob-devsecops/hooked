@@ -22,6 +22,7 @@ SHA_RE = re.compile(r'^[0-9a-f]{7,40}$', re.IGNORECASE)
 @dataclass
 class InstallInfo:
     """Represents installation info from direct_url.json."""
+
     url: str | None = None
     requested_revision: str | None = None
     commit: str | None = None
@@ -56,7 +57,9 @@ def get_install_info() -> InstallInfo:
             install_info.requested_revision = vcs.get('requested_revision')
             install_info.commit = vcs.get('commit_id')
     except FileNotFoundError:
-        raise RuntimeError('Could not find installation metadata; was hooked installed via Git?')
+        raise RuntimeError(
+            'Could not find installation metadata; was hooked installed via Git?'
+        )
 
     logger.debug('Installation info: %s', install_info)
     return install_info
@@ -88,6 +91,7 @@ def get_latest_release(tags: list[tuple[str, str]]) -> str | None:
     logger.debug('Latest semver tag: %s', semver_tags[0])
     return semver_tags[-1][1]
 
+
 def get_sha_for_tag(tags: list[tuple[str, str]], tag: str) -> str | None:
     """Returns sha for given tag, or None if not found."""
     for t, sha in tags:
@@ -97,13 +101,14 @@ def get_sha_for_tag(tags: list[tuple[str, str]], tag: str) -> str | None:
     logger.warning('Could not find sha for tag: %s', tag)
     return None
 
+
 def _is_semver_tag(ref: str) -> bool:
     """Checks if given ref is a semver tag."""
     return bool(ref and SEMVER_TAG_RE.match(ref))
 
 
 def _is_sha(ref: str) -> bool:
-    """Checks if given ref is a SHA."""
+    """Checks if given ref is an SHA."""
     return bool(ref and SHA_RE.match(ref))
 
 
@@ -134,7 +139,9 @@ def self_upgrade(reset=False, pin=False, switch: str | None = None) -> int:
         raise RuntimeError('Installation URL must be specified')
 
     if not info.is_vcs or info.url.startswith('file://'):
-        raise RuntimeError('Non-Git installation of hooked detected; remove and re-install via Git repository.')
+        raise RuntimeError(
+            'Non-Git installation of hooked detected; remove and re-install via Git repository.'
+        )
 
     # read all tags from remote via git
     tags = git_get_tags(info.url)
@@ -142,7 +149,9 @@ def self_upgrade(reset=False, pin=False, switch: str | None = None) -> int:
     # by default target_ref is latest semver release
     target_ref = get_latest_release(tags)
     if not target_ref:
-        raise RuntimeError('Could not determine latest semver tag from remote repository.')
+        raise RuntimeError(
+            'Could not determine latest semver tag from remote repository.'
+        )
 
     if switch:
         logger.debug('Switching to pinned %s', switch)

@@ -4,25 +4,26 @@ import sys
 from collections.abc import Sequence
 
 from hooked import __version__
-from hooked.library import (
-    cmd_parser,
-    copy_git_hook_templates,
-    copy_git_hooks,
-    create_base_dir,
-    create_git_template_dir,
-    create_hooks_dir,
+from hooked.library.cli import cmd_parser
+from hooked.library.config import get_config_git_repo, update_config_git_repo
+from hooked.library.files import (
     get_base_dir,
-    get_config_git_repo,
-    git_set_global_hook_path,
-    git_set_template_dir,
-    git_unset_global_hook_path,
-    git_unset_template_dir,
+    create_base_dir,
+    create_hooks_dir,
+    copy_git_hooks,
     remove_base_dir,
-    update_config_git_repo,
-    self_upgrade,
-    logger,
-    pre_commit_diff
+    create_git_template_dir,
 )
+from hooked.library.git import (
+    git_set_global_hook_path,
+    git_unset_global_hook_path,
+    git_set_template_dir,
+    git_unset_template_dir,
+)
+from hooked.library.logger import logger
+from hooked.library.pre_commit_diff import pre_commit_diff
+from hooked.library.upgrade import self_upgrade
+
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = cmd_parser()
@@ -44,13 +45,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         templates_dir = create_git_template_dir(base_dir)
         logger.debug(f"Git templates directory created at {templates_dir}")
 
-        copy_git_hooks(hooks_dir)
+        copy_git_hooks('hooked.data.git_hooks', hooks_dir)
         logger.debug('Git hooks copied.')
 
         get_config_git_repo(base_dir, args.rules, args.branch)
         logger.debug('Pre-commit config installed.')
 
-        copy_git_hook_templates(templates_dir)
+        copy_git_hooks('hooked.data.git_hook_templates', templates_dir)
         logger.debug('Git templates copied.')
 
         git_set_global_hook_path(hooks_dir)

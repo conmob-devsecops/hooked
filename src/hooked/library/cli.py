@@ -55,23 +55,22 @@ def cmd_parser() -> argparse.ArgumentParser:
     )
 
     # upgrade subcommand
-    cmd_upgrade = sub.add_parser(
-        'upgrade', help='Upgrade hooked installation')
+    cmd_upgrade = sub.add_parser('upgrade', help='Upgrade hooked installation')
     cmd_upgrade.add_argument(
         '--reset',
         action='store_true',
-        help='Reset to latest semver release (stop tracking branch/SHA)'
+        help='Reset to latest semver release (stop tracking branch/SHA)',
     )
     cmd_upgrade.add_argument(
         '--switch',
         metavar='REF',
-        help='Switch to given branch/tag/sha and install from there'
+        help='Switch to given branch/tag/sha and install from there',
     )
     cmd_upgrade.add_argument(
         '--pin',
         action='store_true',
         default=False,
-        help='Pin current installation to its branch/tag/sha (stop tracking branch)'
+        help='Pin current installation to its branch/tag/sha (stop tracking branch)',
     )
 
     # version subcommand
