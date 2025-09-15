@@ -78,11 +78,11 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         return 0
 
-    if args.cmd == 'upgrade' and args.pin and not args.switch:
-        parser.error('--pin can only be used with --switch')
+    if args.cmd == 'upgrade' and args.freeze and not args.rev:
+        parser.error('--freeze can only be used with explicit revision argument')
 
     if args.cmd == 'upgrade':
-        return self_upgrade(reset=args.reset, pin=args.pin, switch=args.switch)
+        return self_upgrade(reset=args.reset, freeze=args.freeze, rev=args.rev)
 
     if args.cmd == 'uninstall':
         logger.debug('Uninstalling hooked...')

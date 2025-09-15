@@ -62,15 +62,16 @@ def cmd_parser() -> argparse.ArgumentParser:
         help='Reset to latest semver release (stop tracking branch/SHA)',
     )
     cmd_upgrade.add_argument(
-        '--switch',
-        metavar='REF',
-        help='Switch to given branch/tag/sha and install from there',
-    )
-    cmd_upgrade.add_argument(
-        '--pin',
+        '--freeze',
         action='store_true',
         default=False,
-        help='Pin current installation to its branch/tag/sha (stop tracking branch)',
+        help='Freezes current installation to its branch/tag/sha (stop tracking branch)',
+    )
+    cmd_upgrade.add_argument(
+        'rev',
+        type=str,
+        nargs='?',
+        help='Switch to given branch/tag/sha and install from there',
     )
 
     # version subcommand

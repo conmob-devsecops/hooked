@@ -121,12 +121,12 @@ def get_url_ref(url: str, ref: str) -> str:
     return spec_url
 
 
-def self_upgrade(reset=False, pin=False, switch: str | None = None) -> int:
+def self_upgrade(reset=False, freeze=False, rev: str | None = None) -> int:
     """
     upgrade           : branch -> latest; sha -> same; semver tag -> latest semver
     upgrade --reset   : ignore current ref, use latest semver tag
-    upgrade --switch X: explicitly switch to branch/tag/sha X
-    upgrade --switch X --pin    : pin to current ref (branch/tag/sha)
+    upgrade X: explicitly switch to branch/tag/sha X
+    upgrade --freeze X: pin to current ref (branch/tag/sha)
     """
 
     # installs are always forced to avoid skipping of moving branches,
@@ -153,17 +153,17 @@ def self_upgrade(reset=False, pin=False, switch: str | None = None) -> int:
             'Could not determine latest semver tag from remote repository.'
         )
 
-    if switch:
-        logger.debug('Switching to pinned %s', switch)
+    if rev:
+        logger.debug('Switching to pinned %s', rev)
         # we can not pin a tag directly, so we pin the sha of the tag
         # if non-sha is given with --pin, we pin the sha of the current commit
         # FIXME: breaks, if someone tries to pin a tag
-        if _is_semver_tag(switch):
-            target_ref = get_sha_for_tag(tags, switch)
-        elif pin:
-            target_ref = git_get_last_branch_commit(info.url, switch)
+        if _is_semver_tag(rev):
+            target_ref = get_sha_for_tag(tags, rev)
+        elif freeze:
+            target_ref = git_get_last_branch_commit(info.url, rev)
         else:
-            target_ref = switch
+            target_ref = rev
     # reset we keep the default target_ref of latest semver tag
     elif reset:
         # noop kept for clarity,
