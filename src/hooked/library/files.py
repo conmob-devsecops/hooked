@@ -7,7 +7,7 @@ from importlib.resources import files, as_file
 def get_base_dir() -> str:
     """Get the base directory for hooked configuration."""
     if platform.system() == "Windows":
-        return os.path.join(os.path.expanduser("~"), "AppData", "Local", "hooked")
+        return os.path.join(os.path.expanduser("~"), ".config", "hooked")
     else:
         return os.path.join(os.path.expanduser("~"), ".config", "hooked")
 
