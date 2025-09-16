@@ -9,6 +9,9 @@ GIT_DIR="$(git rev-parse --git-dir)"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 LOCAL_HOOK="$GIT_DIR/hooks/pre-commit"
 
+# set this preemptively for gitleaks if used
+export GITLEAKS_CONFIG="${HOME}/.config/hooked/config/.gitleaks.toml"
+
 log() { printf '[hooked] %s\n' "$*"; }
 
 log "Running global pre-commit checks..."
@@ -35,6 +38,7 @@ if [ -n "$staged_files" ]; then
 fi
 
 unset SKIP
+unset GITLEAKS_CONFIG
 log "Finished running global hooks."
 
 # --- Helper: resolve symlinks to avoid recursion ---
