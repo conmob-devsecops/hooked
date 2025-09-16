@@ -6,10 +6,10 @@ from importlib.resources import files, as_file
 
 def get_base_dir() -> str:
     """Get the base directory for hooked configuration."""
-    if platform.system() == 'Windows':
-        return os.path.join(os.path.expanduser('~'), 'AppData', 'Local', 'hooked')
+    if platform.system() == "Windows":
+        return os.path.join(os.path.expanduser("~"), "AppData", "Local", "hooked")
     else:
-        return os.path.join(os.path.expanduser('~'), '.config', 'hooked')
+        return os.path.join(os.path.expanduser("~"), ".config", "hooked")
 
 
 def create_base_dir(base_dir) -> str:
@@ -20,14 +20,14 @@ def create_base_dir(base_dir) -> str:
 
 def create_hooks_dir(base_dir: str) -> str:
     """Create the git_hooks directory if it doesn't exist."""
-    hooks_dir = os.path.join(base_dir, 'git_hooks')
+    hooks_dir = os.path.join(base_dir, "git_hooks")
     os.makedirs(hooks_dir, exist_ok=True)
     return hooks_dir
 
 
 def create_git_template_dir(base_dir: str) -> str:
     """Create the git_template directory if it doesn't exist."""
-    git_template_dir = os.path.join(base_dir, 'git_template')
+    git_template_dir = os.path.join(base_dir, "git_template")
     os.makedirs(git_template_dir, exist_ok=True)
     return git_template_dir
 
@@ -44,7 +44,7 @@ def copy_git_hooks(git_hooks_src_path: str, git_hooks_dst_dir: str):
                 src_file_path = os.path.join(root, file)
                 dst_file_path = os.path.join(dest_dir, file)
                 with open(src_file_path) as src_file:
-                    with open(dst_file_path, 'w') as dst_file:
+                    with open(dst_file_path, "w") as dst_file:
                         dst_file.write(src_file.read())
                 os.chmod(dst_file_path, 0o755)
 

@@ -19,7 +19,7 @@ def pre_commit_diff(file_path: str) -> str:
 
     hooked_base_dir = get_base_dir()
     hooked_pre_commit_config = os.path.join(
-        hooked_base_dir, 'config', '.pre-commit-config.yaml'
+        hooked_base_dir, "config", ".pre-commit-config.yaml"
     )
     with open(hooked_pre_commit_config) as f:
         hooked_pre_commit = safe_load(f)
@@ -33,18 +33,18 @@ def pre_commit_diff(file_path: str) -> str:
         hooked_ids = set()
         repo_ids = set()
 
-        for repo in hooked_pre_commit.get('repos', []):
-            hooked_ids.update({hook.get('id') for hook in repo.get('hooks', [])})
+        for repo in hooked_pre_commit.get("repos", []):
+            hooked_ids.update({hook.get("id") for hook in repo.get("hooks", [])})
         logger.debug(f"Found {len(hooked_ids)} repo hook ids, {hooked_ids}")
 
-        for repo in repo_pre_commit.get('repos', []):
-            repo_ids.update({hook.get('id') for hook in repo.get('hooks', [])})
+        for repo in repo_pre_commit.get("repos", []):
+            repo_ids.update({hook.get("id") for hook in repo.get("hooks", [])})
         logger.debug(f"Found {len(repo_ids)} repo hook ids, {repo_ids}")
 
         common_ids = hooked_ids.intersection(repo_ids)
         logger.debug(f"Found {len(common_ids)} common hook ids, {common_ids}")
-        return ','.join(common_ids)
+        return ",".join(common_ids)
 
     except FileNotFoundError as e:
         logger.error(f"A file was not found: {e}")
-        return ''
+        return ""

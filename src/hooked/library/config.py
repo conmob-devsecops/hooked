@@ -3,7 +3,7 @@ import os
 
 def get_config_git_repo(base_dir: str, repo: str, branch: str):
     """Clones the configuration Git repository."""
-    config_dir = os.path.join(base_dir, 'config')
+    config_dir = os.path.join(base_dir, "config")
 
     os.system(f"git clone {repo} {config_dir}")
     os.system(f"git -C {config_dir} checkout {branch}")
@@ -11,7 +11,7 @@ def get_config_git_repo(base_dir: str, repo: str, branch: str):
 
 def update_config_git_repo(base_dir: str, force: bool = False):
     """Updates the configuration Git repository."""
-    config_dir = os.path.join(base_dir, 'config')
+    config_dir = os.path.join(base_dir, "config")
 
     if force:
         os.system(f"git -C {config_dir} fetch --prune --tags origin")

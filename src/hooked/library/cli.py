@@ -3,101 +3,108 @@ import argparse
 
 def cmd_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog='hooked',
-        description='Does stuff with Git hooks',
+        prog="hooked",
+        description="Does stuff with Git hooks",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    sub = parser.add_subparsers(dest='cmd')
+    sub = parser.add_subparsers(dest="cmd")
 
     # install subcommand
     cmd_install = sub.add_parser(
-        'install',
-        help='install hooked into your system',
+        "install",
+        help="install hooked into your system",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     cmd_install.add_argument(
-        '--rules',
+        "--rules",
         type=str,
         required=True,
-        help='Git repository URL or local path to the ruleset',
+        help="Git repository URL or local path to the ruleset",
     )
     cmd_install.add_argument(
-        '--branch',
+        "--branch",
         type=str,
-        default='main',
-        help='Branch of the ruleset repository to use',
+        default="main",
+        help="Branch of the ruleset repository to use",
     )
 
     cmd_skip_duplicates = sub.add_parser(
-        'list-duplicate-hooks',
+        "list-duplicate-hooks",
         help="List duplicate hooks between hooked and the repository's .pre-commit-config.yaml",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     cmd_skip_duplicates.add_argument(
-        'path',
+        "path",
         type=str,
         nargs=1,
-        help='Path to the .pre-commit-config.yaml file',
+        help="Path to the .pre-commit-config.yaml file",
     )
 
     # update rules subcommand
     cmd_update_rules = sub.add_parser(
-        'update-rules',
-        help='update hooked rule set',
+        "update-rules",
+        help="update hooked rule set",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     cmd_update_rules.add_argument(
-        '--force',
-        action='store_true',
+        "--force",
+        action="store_true",
         default=False,
-        help='Force update by resetting local changes',
+        help="Force update by resetting local changes",
     )
 
     # upgrade subcommand
-    cmd_upgrade = sub.add_parser('upgrade', help='Upgrade hooked installation')
+    cmd_upgrade = sub.add_parser("upgrade", help="Upgrade hooked installation")
     cmd_upgrade.add_argument(
-        '--reset',
-        action='store_true',
-        help='Reset to latest semver release (stop tracking branch/SHA)',
+        "--reset",
+        action="store_true",
+        help="Reset to latest semver release (stop tracking branch/SHA)",
     )
     cmd_upgrade.add_argument(
-        '--freeze',
-        action='store_true',
+        "--freeze",
+        action="store_true",
         default=False,
-        help='Freezes current installation to its branch/tag/sha (stop tracking branch)',
+        help="Freezes current installation to its branch/tag/sha (stop tracking branch)",
     )
     cmd_upgrade.add_argument(
-        'rev',
+        "rev",
         type=str,
-        nargs='?',
-        help='Switch to given branch/tag/sha and install from there',
+        nargs="?",
+        help="Switch to given branch/tag/sha and install from there",
     )
     cmd_upgrade.add_argument(
-        '--cron',
-        action='store_true',
+        "--cron",
+        action="store_true",
         default=False,
-        help='Indicates that this upgrade is triggered by the periodic check',
+        help="Indicates that this upgrade is triggered by the periodic check",
     )
 
     # cron subcommand
     cmd_cron = sub.add_parser(
-        'cron',
-        help='Serves as entrypoint to auto-update the ruleset and upgrade hooked itself',
+        "cron",
+        help="Serves as entrypoint to auto-update the ruleset and upgrade hooked itself",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    cmd_cron.add_argument(
+        "--force",
+        action="store_true",
+        default=False,
+        help="Ignore the timer",
     )
 
     # version subcommand
     sub.add_parser(
-        'version',
-        help='print the current version',
+        "version",
+        help="print the current version",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     # uninstall subcommand
     sub.add_parser(
-        'uninstall',
-        help='remove hooked from your system',
+        "uninstall",
+        help="remove hooked from your system",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
