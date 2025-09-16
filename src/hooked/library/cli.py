@@ -7,6 +7,14 @@ def cmd_parser() -> argparse.ArgumentParser:
         description="Does stuff with Git hooks",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=0,
+        dest="log_level",
+        help="Increase verbosity (-v: WARNING, -vv: INFO, -vvv: DEBUG)",
+    )
     sub = parser.add_subparsers(dest="cmd")
 
     # install subcommand

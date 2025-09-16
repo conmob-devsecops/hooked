@@ -21,7 +21,7 @@ from hooked.library.git import (
     git_set_template_dir,
     git_unset_template_dir,
 )
-from hooked.library.logger import logger
+from hooked.library.logger import logger, set_log_level
 from hooked.library.pre_commit_diff import pre_commit_diff
 from hooked.library.upgrade import (
     self_upgrade,
@@ -35,8 +35,11 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
 
+    set_log_level(args.log_level)
+
     if args.cmd == "version":
-        logger.info(f"hooked version {__version__}")
+        sys.stdout.write(f"hooked version {__version__}\n")
+        sys.stdout.flush()
         return 0
 
     if args.cmd == "install":
