@@ -85,6 +85,10 @@ def run_pre_commit_hook(cwd: str = None) -> int:
     logger.debug("Running pre-commit hooks...")
     try:
         pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
+
+        _env = os.environ.copy()
+        _env["GITLEAKS_CONFIG"] = os.path.join(config_dir, ".gitleaks.toml")
+
         result = run_stream(
             [
                 "pre-commit",
@@ -92,6 +96,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
                 "--config",
                 pre_commit_config,
             ],
+            env=_env,
             cwd=str(cwd_path),
         )
         if result.returncode != 0:
