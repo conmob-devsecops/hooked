@@ -47,12 +47,12 @@ def _log_cmd(cmd: Sequence[str]) -> None:
         logger.debug("+ %s", " ".join(shlex.quote(str(arg)) for arg in cmd))
 
 
-def _handle_failure(result: CommandResult) -> None:
+def _handle_failure(result: CommandResult, stderr: bool = False, stdout: bool = False) -> None:
     """Log stderr AND stdout when a command fails, then raise CommandError."""
-    if result.stderr:
-        logger.error("stderr:\n%s", result.stderr.strip())
-    if result.stdout:
-        logger.error("stdout:\n%s", result.stdout.strip())
+    if result.stderr and stderr:
+        logger.error("stderr:\n%s", result.stderr)
+    if result.stdout and stdout:
+        logger.error("stdout:\n%s", result.stdout)
     raise CommandError(result)
 
 
@@ -82,7 +82,7 @@ def run_cmd(
             check=False,
         )
     except FileNotFoundError as e:
-        _handle_failure(CommandResult(cmd, 127, None, str(e)))
+        _handle_failure(CommandResult(cmd, 127, None, str(e)), stderr=True, stdout=True)
     except sp.TimeoutExpired as e:
         rc = -signal.SIGALRM
         _handle_failure(CommandResult(cmd, rc, e.stdout, e.stderr))
