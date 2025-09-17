@@ -77,7 +77,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         logger.info("No staged files to check.")
         return 0
 
-    logger.debug(f"Staged files:\n{staged_files}")
+    logger.debug(f"Staged files: {staged_files}")
     logger.debug("Running pre-commit hooks...")
     try:
         pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
