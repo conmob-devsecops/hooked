@@ -13,7 +13,7 @@ def cmd_parser() -> argparse.ArgumentParser:
         action="count",
         default=0,
         dest="log_level",
-        help="Increase verbosity (-v: WARNING, -vv: INFO, -vvv: DEBUG)",
+        help="Increase verbosity (-v: INFO, -vv: DEBUG)",
     )
     sub = parser.add_subparsers(dest="cmd")
 

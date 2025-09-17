@@ -12,10 +12,9 @@ logger.addHandler(handler)
 
 def set_log_level(verbosity):
     levels = {
-        0: logging.ERROR,
-        1: logging.WARNING,
-        2: logging.INFO,
-        3: logging.DEBUG,
+        0: logging.WARNING,
+        1: logging.INFO,
+        2: logging.DEBUG,
     }
     level = levels.get(verbosity, logging.DEBUG)
     logger.setLevel(level)
