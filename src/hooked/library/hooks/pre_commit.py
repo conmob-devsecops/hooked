@@ -1,26 +1,22 @@
-from hooked.library.config import update_config_git_repo
-from hooked.library.files import get_base_dir
-from hooked.library.logger import logger
+import os
+from datetime import datetime, timedelta
+from pathlib import Path
 
+from hooked import __upgrade_interval_seconds__
 from hooked.library.cmd_util import run_cmd, CommandError, run_stream
-from hooked.library.upgrade import (
-    get_last_upgrade_timestamp,
-    self_upgrade,
-    set_last_upgrade_timestamp,
-)
-
+from hooked.library.config import update_config_git_repo
 from hooked.library.files import (
     create_hooks_dir,
     create_git_template_dir,
     copy_git_hooks,
 )
-
-from datetime import datetime, timedelta
-from pathlib import Path
-
-import os
-
-from hooked import __upgrade_interval_seconds__
+from hooked.library.files import get_base_dir
+from hooked.library.logger import logger
+from hooked.library.upgrade import (
+    get_last_upgrade_timestamp,
+    self_upgrade,
+    set_last_upgrade_timestamp,
+)
 
 
 def _pre_commit_version():
@@ -50,7 +46,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
     if (last_run and now - last_run < delta) or True == True:
         logger.debug("Pre-commit upgrade skipped due to upgrade interval.")
     else:
-        logger.debug(f"Running hooked self-upgrade...")
+        logger.debug("Running hooked self-upgrade...")
         self_upgrade()
 
         logger.debug("Running pre-commit autoupdate...")
@@ -90,7 +86,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         _env["GITLEAKS_CONFIG"] = os.path.join(config_dir, ".gitleaks.toml")
         _env["PRE_COMMIT_COLOR"] = "always"
 
-        result = run_stream(
+        run_stream(
             [
                 "pre-commit",
                 "run",
@@ -100,16 +96,16 @@ def run_pre_commit_hook(cwd: str = None) -> int:
             env=_env,
             cwd=str(cwd_path),
         )
-        # pre-commit returns exit code 1 on "expected" failures (i.e., hook failures)
-        if result.returncode == 1:
-            logger.error(
+    except CommandError as exc:
+        # pre-commit returns exit code 1 on "expected" failures (i.e., hook failures) and 3 for unexpected ones
+        if (
+            getattr(exc, "result", None)
+            and getattr(exc.result, "returncode", None) == 1
+        ):
+            logger.warning(
                 "Pre-commit hooks failed. Please fix the issues and try again."
             )
-            return result.returncode
-        else:
-            logger.info("All pre-commit hooks passed successfully.")
-    except CommandError:
-        logger.error("Pre-commit exited non-zero, please check the output above.")
-        return 1
+            return 1
+        raise
 
     return 0

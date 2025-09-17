@@ -47,7 +47,9 @@ def _log_cmd(cmd: Sequence[str]) -> None:
         logger.debug("+ %s", " ".join(shlex.quote(str(arg)) for arg in cmd))
 
 
-def _handle_failure(result: CommandResult, stderr: bool = False, stdout: bool = False) -> None:
+def _handle_failure(
+    result: CommandResult, stderr: bool = False, stdout: bool = False
+) -> None:
     """Log stderr AND stdout when a command fails, then raise CommandError."""
     if result.stderr and stderr:
         logger.error("stderr:\n%s", result.stderr)

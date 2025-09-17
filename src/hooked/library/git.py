@@ -1,4 +1,3 @@
-import subprocess
 from .cmd_util import run_cmd, CommandError
 
 from .logger import logger
