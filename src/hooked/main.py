@@ -98,7 +98,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         now = datetime.now()
         delta = timedelta(seconds=__upgrade_interval_seconds__)
         if last_run and now - last_run < delta and not args.force:
-            logger.debug(
+            logger.info(
                 "Last upgrade was %s, skipping upgrade (interval %s)", last_run, delta
             )
             return 0
@@ -134,6 +134,12 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         logger.debug("hooked uninstalled.")
         return 0
+
+    if args.cmd_run == "pre-commit":
+        # Lazy import to avoid dependency if not used
+        from hooked.library.hooks.pre_commit import run_pre_commit_hook
+
+        return run_pre_commit_hook(args.path)
 
     parser.print_help()
     return 0

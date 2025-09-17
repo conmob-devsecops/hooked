@@ -17,6 +17,27 @@ def cmd_parser() -> argparse.ArgumentParser:
     )
     sub = parser.add_subparsers(dest="cmd")
 
+    # run subcommand
+    cmd_run = sub.add_parser(
+        "run",
+        help="run hooked hooks",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    cmd_run_sub = cmd_run.add_subparsers(dest="cmd_run")
+
+    cmd_run_pre_commit = cmd_run_sub.add_parser(
+        "pre-commit",
+        help="run the pre-commit hook actions",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    cmd_run_pre_commit.add_argument(
+        "path",
+        type=str,
+        nargs=1,
+        help="Path to the repository where the pre-commit hook should be run",
+    )
+
     # install subcommand
     cmd_install = sub.add_parser(
         "install",
@@ -112,7 +133,7 @@ def cmd_parser() -> argparse.ArgumentParser:
     # uninstall subcommand
     sub.add_parser(
         "uninstall",
-        help="remove hooked from your system",
+        help="remove hooked hooks from your system",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 

@@ -3,7 +3,6 @@ from __future__ import annotations
 import importlib.metadata as md
 import json
 import re
-import subprocess
 import sys
 import os
 from datetime import datetime
@@ -12,6 +11,7 @@ from dataclasses import dataclass
 from packaging.version import Version, InvalidVersion
 
 from .logger import logger
+from .cmd_util import run_cmd
 
 from hooked import __pkg_name__
 from .git import git_get_tags, git_get_last_branch_commit
@@ -33,10 +33,10 @@ class InstallInfo:
     is_editable: bool = False
 
 
-def run_pip(*args: str) -> int:
+def _run_pip(*args: str) -> int:
     """Wrapper around pip subprocess call."""
     logger.debug("Running pip command: %s", args)
-    return subprocess.call([sys.executable, "-m", "pip", *args])
+    return run_cmd([sys.executable, "-m", "pip", *args]).returncode
 
 
 # thank god for PEP 610
@@ -193,7 +193,7 @@ def self_upgrade(reset=False, freeze=False, rev: str | None = None) -> int:
     spec = get_url_ref(info.url, target_ref)
     logger.debug("Specification: %s", spec)
     pip_args.append(spec)
-    return run_pip(*pip_args)
+    return _run_pip(*pip_args)
 
 
 def get_last_upgrade_timestamp() -> datetime | None:

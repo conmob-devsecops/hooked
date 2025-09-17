@@ -6,6 +6,8 @@ import threading
 from dataclasses import dataclass
 from typing import Optional, Sequence, Mapping, List
 
+from logging import DEBUG
+
 from .logger import logger
 
 
@@ -41,7 +43,7 @@ def _normalize_exit_code(returncode: int) -> int:
 
 def _log_cmd(cmd: Sequence[str]) -> None:
     """Log the command like `set -x` when in DEBUG level."""
-    if logger.isEnabledFor(10):  # DEBUG = 10
+    if logger.isEnabledFor(DEBUG):
         logger.debug("+ %s", " ".join(shlex.quote(str(arg)) for arg in cmd))
 
 
