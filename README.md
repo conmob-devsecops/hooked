@@ -23,7 +23,7 @@ set: [conmob-devsecops/hooked-rules](https://github.com/conmob-devsecops/hooked-
 the branch checked out by default is the default one, if not specified otherwise with the `--branch` option.
 
 ```bash
-hooked install --rules=git+https://github.com/conmob-devsecops/hooked-ruleset-tsi --branch=feature/new-rule
+hooked install --rules git@github.com:conmob-devsecops/hooked-ruleset-tsi.git --branch=feature/new-rule
 ```
 
 ### Local installation

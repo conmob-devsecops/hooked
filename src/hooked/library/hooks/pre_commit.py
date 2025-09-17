@@ -84,8 +84,16 @@ def run_pre_commit_hook(cwd: str = None) -> int:
     logger.debug(f"Staged files:\n{staged_files}")
     logger.debug("Running pre-commit hooks...")
     try:
+        pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
         result = run_cmd(
-            ["pre-commit", "run", "--config", config_dir, "--files", staged_files],
+            [
+                "pre-commit",
+                "run",
+                "--config",
+                pre_commit_config,
+                "--files",
+                staged_files,
+            ],
             cwd=str(cwd_path),
         )
         logger.debug(f"pre-commit output:\n{result.stdout}")
