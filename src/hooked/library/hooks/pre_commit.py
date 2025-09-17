@@ -88,6 +88,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
 
         _env = os.environ.copy()
         _env["GITLEAKS_CONFIG"] = os.path.join(config_dir, ".gitleaks.toml")
+        _env["PRE_COMMIT_COLOR"] = "always"
 
         result = run_stream(
             [
@@ -99,7 +100,8 @@ def run_pre_commit_hook(cwd: str = None) -> int:
             env=_env,
             cwd=str(cwd_path),
         )
-        if result.returncode != 0:
+        # pre-commit returns exit code 1 on "expected" failures (i.e., hook failures)
+        if result.returncode == 1:
             logger.error(
                 "Pre-commit hooks failed. Please fix the issues and try again."
             )
