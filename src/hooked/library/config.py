@@ -1,15 +1,22 @@
-from .cmd_util import run_cmd
+from .cmd_util import run_cmd, CommandError
 import os
+from .logger import logger
 
 
-def get_config_git_repo(base_dir: str, repo: str, branch: str):
+def get_config_git_repo(base_dir: str, repo: str, branch: str) -> int:
     """Clones the configuration Git repository."""
     config_dir = os.path.join(base_dir, "config")
     cmd_git_clone = ["git", "clone", repo, config_dir]
-    run_cmd(cmd_git_clone)
+    try:
+        run_cmd(cmd_git_clone)
+    except CommandError as e:
+        if getattr(e, "result", None) and getattr(e.result, "returncode", None) == 128:
+            logger.warning("Git clone failed, repository already exists.")
+            return 0
+        raise
 
     cmd_git_checkout = ["git", "-C", config_dir, "checkout", branch]
-    run_cmd(cmd_git_checkout)
+    return run_cmd(cmd_git_checkout).returncode
 
 
 def update_config_git_repo(base_dir: str, force: bool = False):

@@ -16,9 +16,9 @@ def git_unset_global_hook_path() -> int:
     try:
         return run_cmd(cmd).returncode
     except CommandError as e:
-        logger.warning("Git global hooksPath not set, nothing to unset.")
         if getattr(e, "result", None) and getattr(e.result, "returncode", None) == 5:
-            return 0  # Treat 'not found' as success
+            logger.warning("Git global hooksPath not set, nothing to unset.")
+            return 0
         raise
 
 
@@ -34,9 +34,9 @@ def git_unset_template_dir() -> int:
     try:
         return run_cmd(cmd).returncode
     except CommandError as e:
-        logger.warning("Git global hooksPath not set, nothing to unset.")
         if getattr(e, "result", None) and getattr(e.result, "returncode", None) == 5:
-            return 0  # Treat 'not found' as success
+            logger.warning("Git global templateDir not set, nothing to unset.")
+            return 0
         raise
 
 
