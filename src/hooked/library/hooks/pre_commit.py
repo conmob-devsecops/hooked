@@ -91,8 +91,6 @@ def run_pre_commit_hook(cwd: str = None) -> int:
                 "run",
                 "--config",
                 pre_commit_config,
-                "--files",
-                staged_files,
             ],
             cwd=str(cwd_path),
         )
