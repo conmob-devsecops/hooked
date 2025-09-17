@@ -94,7 +94,6 @@ def run_pre_commit_hook(cwd: str = None) -> int:
             ],
             cwd=str(cwd_path),
         )
-        logger.debug(f"pre-commit output:\n{result.stdout}")
         if result.returncode != 0:
             logger.error(
                 "Pre-commit hooks failed. Please fix the issues and try again."
