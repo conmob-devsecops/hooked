@@ -2,7 +2,7 @@ from hooked.library.config import update_config_git_repo
 from hooked.library.files import get_base_dir
 from hooked.library.logger import logger
 
-from hooked.library.cmd_util import run_cmd, CommandError
+from hooked.library.cmd_util import run_cmd, CommandError, run_stream
 from hooked.library.upgrade import (
     get_last_upgrade_timestamp,
     self_upgrade,
@@ -85,7 +85,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
     logger.debug("Running pre-commit hooks...")
     try:
         pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
-        result = run_cmd(
+        result = run_stream(
             [
                 "pre-commit",
                 "run",
@@ -102,7 +102,8 @@ def run_pre_commit_hook(cwd: str = None) -> int:
             return result.returncode
         else:
             logger.info("All pre-commit hooks passed successfully.")
-    except CommandError as exc:
-        raise RuntimeError(f"Pre-commit hooks failed.") from exc
+    except CommandError:
+        logger.error("Pre-commit exited non-zero, please check the output above.")
+        return 1
 
     return 0
