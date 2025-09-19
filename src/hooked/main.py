@@ -36,6 +36,10 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     set_log_level(args.log_level)
 
+    logger.debug(f"hooked version {__version__}")
+    logger.debug(f"Arguments: {args}")
+    logger.debug(f"Log level set to {logger.level}")
+
     if args.cmd == "version":
         sys.stdout.write(f"hooked version {__version__}\n")
         sys.stdout.flush()
@@ -127,7 +131,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         logger.debug("hooked uninstalled.")
         return 0
 
-    if args.cmd_run == "pre-commit":
+    if args.cmd == "run" and getattr(args, "cmd_run", None) == "pre-commit":
         # Lazy import to avoid dependency if not used
         from hooked.library.hooks.pre_commit import run_pre_commit_hook
 

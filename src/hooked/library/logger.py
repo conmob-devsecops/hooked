@@ -16,9 +16,9 @@ def _get_level_env() -> int | None:
 
     match level_str:
         case "INFO":
-            return 0
-        case "DEBUG":
             return 1
+        case "DEBUG":
+            return 2
         case _:
             return None
 
