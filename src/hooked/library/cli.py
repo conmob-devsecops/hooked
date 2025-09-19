@@ -58,18 +58,6 @@ def cmd_parser() -> argparse.ArgumentParser:
         help="Branch of the ruleset repository to use",
     )
 
-    cmd_skip_duplicates = sub.add_parser(
-        "list-duplicate-hooks",
-        help="List duplicate hooks between hooked and the repository's .pre-commit-config.yaml",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    cmd_skip_duplicates.add_argument(
-        "path",
-        type=str,
-        nargs=1,
-        help="Path to the .pre-commit-config.yaml file",
-    )
-
     # update rules subcommand
     cmd_update_rules = sub.add_parser(
         "update-rules",

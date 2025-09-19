@@ -18,9 +18,11 @@ from hooked.library.upgrade import (
     set_last_upgrade_timestamp,
 )
 
+from hooked.library.pre_commit_util import is_hook_error
+
 
 def _pre_commit_version():
-    version = run_cmd(["pre-commit", "--version"]).stdout.strip()
+    version = run_cmd(["pre-commit", "--version"]).stdout
     logger.debug(f"running {version}")
 
 
@@ -97,15 +99,34 @@ def run_pre_commit_hook(cwd: str = None) -> int:
             cwd=str(cwd_path),
         )
     except CommandError as exc:
-        # pre-commit returns exit code 1 on "expected" failures (i.e., hook failures) and 3 for unexpected ones
-        if (
-            getattr(exc, "result", None)
-            and getattr(exc.result, "returncode", None) == 1
-        ):
-            logger.warning(
-                "Pre-commit hooks failed. Please fix the issues and try again."
-            )
-            return 1
-        raise
+        if not is_hook_error(exc):
+            raise
+
+        logger.warning("Pre-commit hooks failed. Please fix the issues and try again.")
+        return 1
+
+    logger.debug("Looking for local .pre-commit-hooks.yaml in repository...")
+    local_pre_commit_file = cwd_path.joinpath(".pre-commit-hooks.yaml")
+    if not local_pre_commit_file.is_file():
+        logger.debug("No .pre-commit-hooks.yaml found in repository.")
+        return 0
+
+    logger.debug(".pre-commit-hooks.yaml found. Running local pre-commit hooks...")
+    try:
+        run_stream(
+            [
+                "pre-commit",
+                "run",
+                "--config",
+                str(local_pre_commit_file),
+            ],
+            cwd=str(cwd_path),
+        )
+    except CommandError as exc:
+        if not is_hook_error(exc):
+            raise
+
+        logger.warning("Pre-commit hooks failed. Please fix the issues and try again.")
+        return 1
 
     return 0

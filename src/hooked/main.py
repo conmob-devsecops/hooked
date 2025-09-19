@@ -22,7 +22,6 @@ from hooked.library.git import (
     git_unset_template_dir,
 )
 from hooked.library.logger import logger, set_log_level
-from hooked.library.pre_commit_diff import pre_commit_diff
 from hooked.library.upgrade import (
     self_upgrade,
     get_last_upgrade_timestamp,
@@ -68,13 +67,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         git_set_template_dir(templates_dir)
         logger.debug("Set Git global template directory.")
 
-        return 0
-
-    if args.cmd == "list-duplicate-hooks":
-        path = args.path
-        diff = pre_commit_diff(path[0])
-        sys.stdout.write(diff)
-        sys.stdout.flush()
         return 0
 
     if args.cmd == "update-rules":
