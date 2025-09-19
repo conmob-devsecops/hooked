@@ -112,6 +112,10 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         return 0
 
     logger.debug(".pre-commit-config.yaml found. Running local pre-commit hooks...")
+
+    _env = os.environ.copy()
+    _env["PRE_COMMIT_COLOR"] = "always"
+
     try:
         run_stream(
             [
@@ -120,6 +124,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
                 "--config",
                 str(local_pre_commit_file),
             ],
+            env=_env,
             cwd=str(cwd_path),
         )
     except CommandError as exc:
