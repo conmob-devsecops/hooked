@@ -10,6 +10,17 @@ formatter = logging.Formatter(
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+# custom log level that is always shown, regardless of the log level set
+ALWAYS = 60
+logging.addLevelName(ALWAYS, "ALWAYS")
+
+
+def always(self, msg, *args, **kwargs):
+    self._log(ALWAYS, msg, args, **kwargs)
+
+
+logging.Logger.always = always
+
 
 def _get_level_env() -> int | None:
     level_str = (os.getenv("HOOKED_LOG_LEVEL") or "").upper()
