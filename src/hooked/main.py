@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import os
 from collections.abc import Sequence
 from datetime import timedelta, datetime
 
@@ -33,8 +34,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = cmd_parser()
 
     args = parser.parse_args(argv)
+    log_level = os.getenv("HOOKED_LOG_LEVEL", "warning")
 
-    set_log_level(args.log_level)
+    if args.log_level:
+        log_level = args.log_level
+
+    set_log_level(log_level)
 
     logger.debug(f"hooked version {__version__}")
     logger.debug(f"Arguments: {args}")

@@ -8,12 +8,11 @@ def cmd_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        "-v",
-        "--verbose",
-        action="count",
-        default=0,
-        dest="log_level",
-        help="Increase verbosity (-v: INFO, -vv: DEBUG)",
+        "--log-level",
+        type=str,
+        choices=["ALWAYS", "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
+        default=None,
+        help="Log level as string.",
     )
     sub = parser.add_subparsers(dest="cmd")
 
