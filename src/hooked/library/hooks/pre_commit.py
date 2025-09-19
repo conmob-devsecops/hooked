@@ -114,13 +114,12 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         logger.warning("Pre-commit hooks failed. Please fix the issues and try again.")
         return 1
 
-    logger.debug("Looking for local .pre-commit-config.yaml in repository...")
     local_pre_commit_file = cwd_path.joinpath(".pre-commit-config.yaml")
     if not local_pre_commit_file.is_file():
         logger.debug("No .pre-commit-config.yaml found in repository.")
         return 0
 
-    logger.debug(".pre-commit-config.yaml found. Running local pre-commit hooks...")
+    logger.info(".pre-commit-config.yaml found. Running local pre-commit hooks...")
 
     _env = os.environ.copy()
     _env["PRE_COMMIT_COLOR"] = "always"

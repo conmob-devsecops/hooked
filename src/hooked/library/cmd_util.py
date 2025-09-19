@@ -115,7 +115,7 @@ def run_stream(
             cwd=cwd,
             env=env,
             stdout=sp.PIPE,
-            stderr=sp.STDOUT,
+            stderr=sp.PIPE,
             text=True,
             bufsize=1,  # line-buffered
         )
@@ -139,7 +139,7 @@ def run_stream(
         target=_pump, args=(p.stdout, sys.stdout, out_buf), daemon=True
     )
     t_err = threading.Thread(
-        target=_pump, args=(p.stderr, sys.stderr, err_buf), daemon=True
+        target=_pump, args=(p.stderr, sys.stdout, err_buf), daemon=True
     )
     t_out.start()
     t_err.start()
