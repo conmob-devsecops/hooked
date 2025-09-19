@@ -1,4 +1,5 @@
 import logging
+import os
 
 logger = logging.getLogger("hooked")
 logger.setLevel(logging.WARNING)
@@ -10,7 +11,22 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
+def _get_level_env() -> int | None:
+    level_str = (os.getenv("HOOKED_LOG_LEVEL") or "").upper()
+
+    match level_str:
+        case "INFO":
+            return 0
+        case "DEBUG":
+            return 1
+        case _:
+            return None
+
+
 def set_log_level(verbosity):
+    if verbosity == 0 and (env_level := _get_level_env()) is not None:
+        verbosity = env_level
+
     levels = {
         0: logging.WARNING,
         1: logging.INFO,

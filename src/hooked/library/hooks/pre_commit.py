@@ -27,6 +27,15 @@ def _pre_commit_version():
 
 
 def run_pre_commit_hook(cwd: str = None) -> int:
+    """
+    Serves as entrypoint for running pre-commit hooks on staged files in a git repository.
+
+    Args:
+        cwd (str): The current working directory where the git repository is located.
+
+    Returns:
+        int: Exit code indicating success (0) or failure (1) of the pre-commit hooks.
+    """
     if not cwd:
         raise RuntimeError("Missing required cwd argument")
 
@@ -79,7 +88,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         logger.info("No staged files to check.")
         return 0
 
-    logger.debug(f"Staged files: {staged_files}")
+    logger.debug(f"Staged files: {", ".join(staged_files)}")
     logger.debug("Running pre-commit hooks...")
     try:
         pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
@@ -133,5 +142,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
 
         logger.warning("Pre-commit hooks failed. Please fix the issues and try again.")
         return 1
+
+    logger.debug("pre-commit hook ran successfully.")
 
     return 0
