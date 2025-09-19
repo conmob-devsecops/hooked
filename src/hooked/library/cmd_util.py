@@ -90,7 +90,7 @@ def run_cmd(
         _handle_failure(CommandResult(cmd, rc, e.stdout, e.stderr))
 
     result = CommandResult(
-        cmd, completed.returncode, completed.stdout, completed.stderr
+        cmd, completed.returncode, completed.stdout.strip(), completed.stderr.strip()
     )
     if not result.ok:
         _handle_failure(result)
