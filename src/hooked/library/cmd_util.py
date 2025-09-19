@@ -115,7 +115,7 @@ def run_stream(
             cwd=cwd,
             env=env,
             stdout=sp.PIPE,
-            stderr=sp.PIPE,
+            stderr=sp.STDOUT,
             text=True,
             bufsize=1,  # line-buffered
         )
@@ -135,8 +135,12 @@ def run_stream(
                 pass
         src.close()
 
-    t_out = threading.Thread(target=_pump, args=(p.stdout, sys.stdout, out_buf), daemon=True)  # type: ignore[arg-type]
-    t_err = threading.Thread(target=_pump, args=(p.stderr, sys.stderr, err_buf), daemon=True)  # type: ignore[arg-type]
+    t_out = threading.Thread(
+        target=_pump, args=(p.stdout, sys.stdout, out_buf), daemon=True
+    )
+    t_err = threading.Thread(
+        target=_pump, args=(p.stderr, sys.stderr, err_buf), daemon=True
+    )
     t_out.start()
     t_err.start()
     rc = p.wait()
