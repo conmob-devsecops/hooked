@@ -87,16 +87,14 @@ def _copy_git_hooks(git_hooks_src_path: str, git_hooks_dst_dir: str):
     """Copy git hook scripts to the git_hooks directory."""
     git_hooks_src_dir = files(git_hooks_src_path)
     with as_file(git_hooks_src_dir) as git_hooks_src:
-        for root, dirs, _files in os.walk(git_hooks_src):
+        for root, _, _files in os.walk(git_hooks_src):
             rel_path = os.path.relpath(root, git_hooks_src)
             dest_dir = os.path.join(git_hooks_dst_dir, rel_path)
             os.makedirs(dest_dir, exist_ok=True)
             for file in _files:
-                src_file_path = os.path.join(root, file)
-                dst_file_path = os.path.join(dest_dir, file)
-                with open(src_file_path) as src_file:
-                    with open(dst_file_path, "w") as dst_file:
-                        dst_file.write(src_file.read())
+                src_file_path = os.path.normpath(os.path.join(root, file))
+                dst_file_path = os.path.normpath(os.path.join(dest_dir, file))
+                shutil.copyfile(src_file_path, dst_file_path)
                 os.chmod(dst_file_path, 0o755)
     logger.debug("Git hooks copied.")
 

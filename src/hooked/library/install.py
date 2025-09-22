@@ -98,7 +98,7 @@ def check_pre_requisites() -> int:
         logger.critical(
             "There was a problem with determining if `gitleaks` is installed: %s.", e
         )
-        logger.into(
+        logger.info(
             "Please install `gitleaks` and ensure it is available in your PATH."
         )
         logger.info(
@@ -112,7 +112,7 @@ def check_pre_requisites() -> int:
         logger.critical(
             "There was a problem with determining if `git` is installed: %s.", e
         )
-        logger.into("Please install `git` and ensure it is available in your PATH.")
+        logger.info("Please install `git` and ensure it is available in your PATH.")
         logger.info("Download `git` from: https://git-scm.com/downloads")
         logger.info(
             "For installation instructions, visit: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git"
