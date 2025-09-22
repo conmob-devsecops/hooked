@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+# AI NOTE: This file is AI-generated, there may be dragons.
+
+echo "Post-commit hook executed"
+
+# check that global hook path set in git config for hooked
+# re-set the hook if needed
+# ensure template dir from hooked is set
+# add this hook to the local repo if not already present
+# ensure the hook is executable

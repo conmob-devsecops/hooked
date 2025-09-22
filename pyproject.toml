@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=80", "setuptools-scm>=9"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hooked"
+description = "Provides a global hook for running pre-commit and other scripts."
+readme = "README.md"
+license = { text = "BSD-3-Clause" }
+authors = [{ name = "Sebastian Gurkasch", email = "sebastian.gurkasch@t-systems.com" }]
+requires-python = ">=3.12"
+dependencies = [
+    "pre-commit==4.3.0",
+    "pyyaml>=6.0.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/conmob-devsecops/hooked"
+Repository = "https://github.com/conmob-devsecops/hooked"
+Issues = "https://github.com/conmob-devsecops/hooked/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["hooked*"]
+
+[tool.setuptools_scm]
+write_to = "src/hooked/_version.py"
+
+[tool.setuptools.package-data]
+hooked = ["data/*", "data/**/*"]
+
+[project.scripts]
+hooked = "hooked.__main__:main"

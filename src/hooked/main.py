@@ -1,0 +1,98 @@
+from __future__ import annotations
+
+import sys
+import os
+from collections.abc import Sequence
+from datetime import timedelta, datetime
+
+from hooked import __version__, __upgrade_interval_seconds__
+from hooked.library.cli import cmd_parser
+from hooked.library.config import update_config_git_repo
+
+from hooked.library.files import get_base_dir, copy_hooked_files
+
+from hooked.library.logger import logger, set_log_level
+from hooked.library.upgrade import (
+    self_upgrade,
+    get_last_upgrade_timestamp,
+    set_last_upgrade_timestamp,
+)
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = cmd_parser()
+
+    args = parser.parse_args(argv)
+    log_level = os.getenv("HOOKED_LOG_LEVEL", "warning")
+
+    if args.log_level:
+        log_level = args.log_level
+
+    set_log_level(log_level)
+
+    logger.debug(f"hooked version {__version__}")
+    logger.debug(f"Arguments: {args}")
+    logger.debug(f"Log level set to {logger.level}")
+
+    if args.cmd == "version":
+        sys.stdout.write(f"hooked version {__version__}\n")
+        sys.stdout.flush()
+        return 0
+
+    if args.cmd == "install":
+        from hooked.library.install import install
+
+        return install(args.rules[0], branch=args.branch)
+
+    if args.cmd == "update-rules":
+        logger.debug("Updating hooked rule set...")
+
+        base_dir = get_base_dir()
+        update_config_git_repo(base_dir)
+        logger.debug("Rule set updated.")
+
+        return 0
+
+    if args.cmd == "upgrade" and args.periodic:
+        logger.debug("Running hooked periodic job...")
+
+        last_run = get_last_upgrade_timestamp()
+        now = datetime.now()
+        delta = timedelta(seconds=__upgrade_interval_seconds__)
+        if last_run and now - last_run < delta and not args.force:
+            logger.info(
+                "Last upgrade was %s, skipping upgrade (interval %s)", last_run, delta
+            )
+            return 0
+
+        set_last_upgrade_timestamp()
+
+        logger.debug("Upgrading hooked installation...")
+        self_upgrade()
+
+        logger.debug("Updating hooked ruleset...")
+        update_config_git_repo(get_base_dir())
+
+        copy_hooked_files()
+
+        return 0
+
+    if args.cmd == "upgrade":
+        return self_upgrade(reset=args.reset, freeze=args.freeze, rev=args.rev)
+
+    if args.cmd == "uninstall":
+        from hooked.library.install import uninstall
+
+        return uninstall()
+
+    if args.cmd == "run" and getattr(args, "cmd_run", None) == "pre-commit":
+        from hooked.library.hooks.pre_commit import run_pre_commit_hook
+
+        return run_pre_commit_hook(args.path)
+
+    parser.print_help()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
