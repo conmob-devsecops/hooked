@@ -25,8 +25,9 @@
 #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from .cmd_util import run_cmd, CommandError
 import os
+
+from .cmd_util import run_cmd, CommandError
 from .logger import logger
 
 

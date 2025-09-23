@@ -26,11 +26,10 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
-
 from unittest.mock import patch
 
-from hooked.library.files import get_base_dir, get_hooks_dir, get_template_dir
 import hooked.library.install as lib
+from hooked.library.files import get_base_dir, get_hooks_dir, get_template_dir
 
 
 class InstallTests(unittest.TestCase):

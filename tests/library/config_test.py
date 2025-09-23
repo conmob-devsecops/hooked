@@ -28,8 +28,8 @@
 import unittest
 from unittest.mock import call, patch
 
-from hooked.library.cmd_util import CommandError, CommandResult
 import hooked.library.config as lib
+from hooked.library.cmd_util import CommandError, CommandResult
 
 
 class TestConfig(unittest.TestCase):

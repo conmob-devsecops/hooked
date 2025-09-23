@@ -25,10 +25,9 @@
 #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import unittest
 import os
 import tempfile
-
+import unittest
 from unittest.mock import patch, call
 
 import hooked.library.files as lib

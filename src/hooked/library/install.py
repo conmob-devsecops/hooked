@@ -25,7 +25,10 @@
 #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from packaging.version import Version, InvalidVersion
+
 from hooked.library.cmd_util import run_cmd, CommandError
+from hooked.library.config import get_config_git_repo
 from hooked.library.files import (
     get_base_dir,
     get_hooks_dir,
@@ -39,10 +42,7 @@ from hooked.library.git import (
     git_set_template_dir,
     git_unset_template_dir,
 )
-from hooked.library.config import get_config_git_repo
 from hooked.library.logger import logger
-
-from packaging.version import Version, InvalidVersion
 
 
 def _get_gitleaks_version() -> str:

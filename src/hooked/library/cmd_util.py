@@ -31,9 +31,8 @@ import subprocess as sp
 import sys
 import threading
 from dataclasses import dataclass
-from typing import Optional, Sequence, Mapping, List
-
 from logging import DEBUG
+from typing import Optional, Sequence, Mapping, List
 
 from .logger import logger
 

@@ -29,20 +29,19 @@ from __future__ import annotations
 
 import importlib.metadata as md
 import json
+import os
 import re
 import sys
-import os
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 
 from packaging.version import Version, InvalidVersion
 
-from .logger import logger
-from .cmd_util import run_cmd
-
 from hooked import __pkg_name__
-from .git import git_get_tags, git_get_last_branch_commit
+from .cmd_util import run_cmd
 from .files import get_base_dir
+from .git import git_get_tags, git_get_last_branch_commit
+from .logger import logger
 
 SEMVER_TAG_RE = re.compile(r"^v?\d+\.\d+\.\d+([.-].+)?$")
 SHA_RE = re.compile(r"^[0-9a-f]{7,40}$", re.IGNORECASE)
