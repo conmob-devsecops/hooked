@@ -85,10 +85,20 @@ This will remove the global git hooks and uninstall `pre-commit` from your local
 
 ## Configuration
 
-## Environment variables
+### Environment variables
 
 `HOOKED_SKIP_UPGRADE_CHECK`: If set to any value, disables the automatic upgrade check that runs sometimes.
 `HOOKED_LOG_LEVEL`: Sets the logging level.
+
+## Skip execution of hooks
+
+Execution of `hooked` hooks can be skipped by setting the corresponding environment variable:
+
+`HOOKED_SKIP_PRE_COMMIT`: If set to any value, skips execution of `pre-commit` hooks.
+
+```bash
+HOOKED_SKIP_PRE_COMMIT=1 git commit -m "This commit skips pre-commit hooks"
+```
 
 Currently, the uninstallation script removes all hooks installed by `hooked` and unsets the global Git template
 directory,

@@ -29,4 +29,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+if [ "${HOOKED_SKIP_PRE_COMMIT:-}" = "1" ]; then
+  exit 0
+fi
+
 python -m hooked run pre-commit "$(pwd)"
