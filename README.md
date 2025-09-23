@@ -2,6 +2,12 @@
 
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 
+## Pre-requisites
+
+- Python >= 3.12
+- Git >= 2.51.0
+- gitleaks >= 8.28.0
+
 ## Installation
 
 Install this package directly from this repository using pip:
@@ -69,7 +75,8 @@ pip install --no-cache-dir  --force-reinstall  git+https://github.com/conmob-dev
 
 (Same command as installation)
 
-`hooked` internally runs `hooked upgrade --periodic` from time to time to check for updates, so you don't have to worry about
+`hooked` internally runs `hooked upgrade --periodic` from time to time to check for updates, so you don't have to worry
+about
 it. If there are newer versions available, it will automatically update itself and the ruleset repository.
 
 ## Uninstall
@@ -82,6 +89,12 @@ hooked uninstall
 
 This will remove the global git hooks and uninstall `pre-commit` from your local repository if it was installed by
 `hooked`.
+
+Currently, the uninstallation script removes all hooks installed by `hooked` and unsets the global Git template
+directory,
+but repositories that already had local `pre-commit` hooks installed will not be affected. You may need to manually
+remove
+hooks from `.git/hooks` if necessary.
 
 ## Configuration
 
@@ -100,8 +113,25 @@ Execution of `hooked` hooks can be skipped by setting the corresponding environm
 HOOKED_SKIP_PRE_COMMIT=1 git commit -m "This commit skips pre-commit hooks"
 ```
 
-Currently, the uninstallation script removes all hooks installed by `hooked` and unsets the global Git template
-directory,
-but repositories that already had local `pre-commit` hooks installed will not be affected. You may need to manually
-remove
-hooks from `.git/hooks` if necessary.
+## Development
+
+To install the development dependencies, create a virtual environment and activate it:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Then install the package in editable mode with the development dependencies:
+
+```bash
+pip install -e ".[dev]"
+```
+
+### Running tests
+
+To run the tests, use `pytest`:
+
+```bash
+pytest --cov=src/hooked
+```

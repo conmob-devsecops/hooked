@@ -8,11 +8,20 @@ description = "Provides a global hook for running pre-commit and other scripts."
 readme = "README.md"
 license = { text = "BSD-3-Clause" }
 authors = [
-  { name = "Sebastian Gurkasch", email = "sebastian.gurkasch@t-systems.com" },
+    { name = "Sebastian Gurkasch", email = "sebastian.gurkasch@t-systems.com" },
+    { name = "Robert Pagel", email = "robert.pagel@t-systems.com" },
 ]
 requires-python = ">=3.12"
 dependencies = ["pre-commit==4.3.0", "pyyaml>=6.0.0"]
 dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+    "black>=25.9.0",
+    "ruff>=0.13.1",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/conmob-devsecops/hooked"
