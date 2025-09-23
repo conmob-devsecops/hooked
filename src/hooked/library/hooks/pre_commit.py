@@ -25,6 +25,13 @@
 #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions are met:
+#
+#
+#
+#
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -33,9 +40,7 @@ from hooked import __upgrade_interval_seconds__
 from hooked.library.cmd_util import run_cmd, CommandError, run_stream
 from hooked.library.config import update_config_git_repo
 from hooked.library.files import (
-    create_hooks_dir,
-    create_git_template_dir,
-    copy_git_hooks,
+    copy_hooked_files
 )
 from hooked.library.files import get_base_dir
 from hooked.library.logger import logger
@@ -98,10 +103,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         update_config_git_repo(base_dir)
 
         logger.debug("Installing latest version of hooked git hooks...")
-        hooks_dir = create_hooks_dir(base_dir)
-        templates_dir = create_git_template_dir(base_dir)
-        copy_git_hooks("hooked.data.git_hook_templates", templates_dir)
-        copy_git_hooks("hooked.data.git_hooks", hooks_dir)
+        copy_hooked_files()
 
         logger.debug("Running pre-commit autoupdate...")
         run_cmd(["pre-commit", "autoupdate"], cwd=config_dir)
