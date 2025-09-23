@@ -31,7 +31,7 @@ from unittest.mock import patch
 import hooked.library.git as lib
 
 
-class git_tests(unittest.TestCase):
+class GitTests(unittest.TestCase):
     @patch("hooked.library.git.run_cmd")
     def test_set_global_hook(self, run_cmd):
         directory = "foo"
