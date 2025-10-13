@@ -24,22 +24,23 @@
 #  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from __future__ import annotations
 
-from packaging.version import Version, InvalidVersion
+from packaging.version import InvalidVersion, Version
 
-from hooked.library.cmd_util import run_cmd, CommandError
+from hooked.library.cmd_util import CommandError, run_cmd
 from hooked.library.config import get_config_git_repo
 from hooked.library.files import (
+    copy_hooked_files,
     get_base_dir,
     get_hooks_dir,
     get_template_dir,
-    copy_hooked_files,
     remove_base_dir,
 )
 from hooked.library.git import (
     git_set_global_hook_path,
-    git_unset_global_hook_path,
     git_set_template_dir,
+    git_unset_global_hook_path,
     git_unset_template_dir,
 )
 from hooked.library.logger import logger

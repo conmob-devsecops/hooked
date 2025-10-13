@@ -24,6 +24,7 @@
 #  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from __future__ import annotations
 
 import shlex
 import signal
@@ -32,7 +33,7 @@ import sys
 import threading
 from dataclasses import dataclass
 from logging import DEBUG
-from typing import Optional, Sequence, Mapping, List
+from typing import List, Mapping, Optional, Sequence
 
 from .logger import logger
 

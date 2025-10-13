@@ -48,3 +48,9 @@ testpaths = ["tests"]
 
 [project.scripts]
 hooked = "hooked.__main__:main"
+
+[tool.ruff.lint]
+select = ["I"]
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]

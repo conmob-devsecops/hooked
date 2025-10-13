@@ -35,12 +35,13 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime
 
-from packaging.version import Version, InvalidVersion
+from packaging.version import InvalidVersion, Version
 
 from hooked import __pkg_name__
+
 from .cmd_util import run_cmd
 from .files import get_base_dir
-from .git import git_get_tags, git_get_last_branch_commit
+from .git import git_get_last_branch_commit, git_get_tags
 from .logger import logger
 
 SEMVER_TAG_RE = re.compile(r"^v?\d+\.\d+\.\d+([.-].+)?$")

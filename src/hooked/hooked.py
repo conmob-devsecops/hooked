@@ -30,16 +30,16 @@ from __future__ import annotations
 import os
 import sys
 from collections.abc import Sequence
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 
-from hooked import __version__, __upgrade_interval_seconds__
+from hooked import __upgrade_interval_seconds__, __version__
 from hooked.library.cli import cmd_parser
 from hooked.library.config import update_config_git_repo
-from hooked.library.files import get_base_dir, copy_hooked_files
+from hooked.library.files import copy_hooked_files, get_base_dir
 from hooked.library.logger import logger, set_log_level
 from hooked.library.upgrade import (
-    self_upgrade,
     get_last_upgrade_timestamp,
+    self_upgrade,
     set_last_upgrade_timestamp,
 )
 

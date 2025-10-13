@@ -24,16 +24,16 @@
 #  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from __future__ import annotations
 
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
 
 from hooked import __upgrade_interval_seconds__
-from hooked.library.cmd_util import run_cmd, CommandError, run_stream
+from hooked.library.cmd_util import CommandError, run_cmd, run_stream
 from hooked.library.config import update_config_git_repo
-from hooked.library.files import copy_hooked_files
-from hooked.library.files import get_base_dir
+from hooked.library.files import copy_hooked_files, get_base_dir
 from hooked.library.logger import logger
 from hooked.library.pre_commit_util import is_hook_error
 from hooked.library.upgrade import (
