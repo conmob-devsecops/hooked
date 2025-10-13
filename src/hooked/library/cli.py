@@ -28,6 +28,11 @@ from __future__ import annotations
 
 import argparse
 
+# this is a hack to figure out if the arg was set or set to default by omission
+class StoreProvided(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values)
+        setattr(namespace, f"{self.dest}_provided", True)
 
 class HookedArgumentParser(argparse.ArgumentParser):
     def parse_args(self, args=None, namespace=None):
@@ -52,8 +57,9 @@ def cmd_parser() -> argparse.ArgumentParser:
         "--log-level",
         type=str,
         choices=["ALWAYS", "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
-        default=None,
-        help="Log level as string.",
+        default="ERROR",
+        action=StoreProvided,
+        help="Level (default: %(default)s)",
     )
     sub = parser.add_subparsers(dest="cmd")
 

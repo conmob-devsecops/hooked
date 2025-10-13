@@ -48,10 +48,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = cmd_parser()
 
     args = parser.parse_args(argv)
-    log_level = os.getenv("HOOKED_LOG_LEVEL", "warning")
 
-    if args.log_level:
-        log_level = args.log_level
+    # default log level is ERROR, can be overridden by HOOKED_LOG_LEVEL env var
+    log_level = os.getenv("HOOKED_LOG_LEVEL", "error").upper()
+
+    # override log level if --log-level was provided
+    if getattr(args, "log_level_provided", True):
+        log_level = args.log_level.upper()
 
     set_log_level(log_level)
 
