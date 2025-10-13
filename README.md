@@ -118,14 +118,23 @@ HOOKED_SKIP_PRE_COMMIT=1 git commit -m "This commit skips pre-commit hooks"
 To install the development dependencies, create a virtual environment and activate it:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+uv sync --dev
 ```
 
-Then install the package in editable mode with the development dependencies:
+This will create a `.venv` directory with the virtual environment. Use this as your Python interpreter in your IDE,
+or activate it manually, depending on your setup.
+
+You can use `uv` to run commands in the virtual environment:
 
 ```bash
-pip install -e ".[dev]"
+uv run python --version
+Python 3.14.0
+```
+
+`uv` can also be used to interact with your development setup of `hooked`:
+
+```bash
+uv run hooked --help
 ```
 
 ### Running tests
