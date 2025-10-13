@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=80", "setuptools-scm>=9"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.27", "hatch-vcs>=0.5"]
+build-backend = "hatchling.build"
 
 [project]
 name = "hooked"
@@ -15,7 +15,7 @@ requires-python = ">=3.12"
 dependencies = ["pre-commit==4.3.0", "pyyaml>=6.0.0"]
 dynamic = ["version"]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "ruff>=0.14.0",
     "pytest>=8.4.2",
@@ -27,12 +27,18 @@ Homepage = "https://github.com/conmob-devsecops/hooked"
 Repository = "https://github.com/conmob-devsecops/hooked"
 Issues = "https://github.com/conmob-devsecops/hooked/issues"
 
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/hooked/_version.py"
+
 [tool.setuptools]
 package-dir = { "" = "src" }
 
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["hooked*"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/hooked"]
+include = ["src/hooked/data/**"]
 
 [tool.setuptools_scm]
 write_to = "src/hooked/_version.py"
