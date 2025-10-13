@@ -40,8 +40,8 @@ module.
 Clone the repository and navigate to the directory:
 
 ```bash
-PYTHONPATH=src
-python -m hooked [...]
+uv sync
+uv run hooked
 ```
 
 ## Usage
