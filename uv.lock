@@ -116,6 +116,7 @@ wheels = [
 name = "hooked"
 source = { editable = "." }
 dependencies = [
+    { name = "packaging" },
     { name = "pre-commit" },
     { name = "pyyaml" },
 ]
@@ -129,7 +130,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pre-commit", specifier = "==4.3.0" },
+    { name = "packaging", specifier = ">=25.0" },
+    { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "pyyaml", specifier = ">=6.0.0" },
 ]
 
