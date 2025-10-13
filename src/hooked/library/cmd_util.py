@@ -24,6 +24,7 @@
 #  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 from __future__ import annotations
 
 import shlex
@@ -33,7 +34,7 @@ import sys
 import threading
 from dataclasses import dataclass
 from logging import DEBUG
-from typing import List, Mapping, Optional, Sequence
+from typing import Mapping, Sequence
 
 from .logger import logger
 
@@ -42,8 +43,8 @@ from .logger import logger
 class CommandResult:
     cmd: Sequence[str]
     returncode: int
-    stdout: Optional[str]
-    stderr: Optional[str]
+    stdout: str | None
+    stderr: str | None
 
     @property
     def ok(self) -> bool:
@@ -88,9 +89,9 @@ def _handle_failure(
 def run_cmd(
     cmd: Sequence[str],
     *,
-    timeout: Optional[float] = None,
-    cwd: Optional[str] = None,
-    env: Optional[Mapping[str, str]] = None,
+    timeout: float | None = None,
+    cwd: str | None = None,
+    env: Mapping[str, str] | None = None,
     text: bool = True,
 ) -> CommandResult:
     """
@@ -127,8 +128,8 @@ def run_cmd(
 def run_stream(
     cmd: Sequence[str],
     *,
-    cwd: Optional[str] = None,
-    env: Optional[Mapping[str, str]] = None,
+    cwd: str | None = None,
+    env: Mapping[str, str] | None = None,
 ) -> CommandResult:
     """
     Stream output live to the console (tee) while capturing it.
@@ -149,10 +150,10 @@ def run_stream(
     except FileNotFoundError as e:
         _handle_failure(CommandResult(cmd, 127, None, str(e)))
 
-    out_buf: List[str] = []
-    err_buf: List[str] = []
+    out_buf: list[str] = []
+    err_buf: list[str] = []
 
-    def _pump(src, dst, collector: List[str]):
+    def _pump(src, dst, collector: list[str]):
         for line in iter(src.readline, ""):
             collector.append(line)
             try:
