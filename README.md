@@ -13,7 +13,7 @@
 Install this package directly from this repository using pip:
 
 ```bash
-pip install --no-cache-dir  --force-reinstall  git+https://github.com/conmob-devsecops/hooked.git@test/installer
+pip install --no-cache-dir  --force-reinstall  git+https://github.com/conmob-devsecops/hooked.git@feature/initial-setup
 ```
 
 After `hooked` is available on your `PATH`, you can run:
