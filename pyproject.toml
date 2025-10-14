@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling>=1.27", "hatch-vcs>=0.5"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hooked"
+description = "Provides a global hook for running pre-commit and other scripts."
+readme = "README.md"
+license = { text = "BSD-3-Clause" }
+authors = [
+    { name = "Sebastian Gurkasch", email = "sebastian.gurkasch@t-systems.com" },
+    { name = "Robert Pagel", email = "robert.pagel@t-systems.com" },
+]
+requires-python = ">=3.12"
+dependencies = ["pre-commit>=4.3.0", "pyyaml>=6.0.0", "packaging>=25.0"]
+dynamic = ["version"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.0",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/conmob-devsecops/hooked"
+Repository = "https://github.com/conmob-devsecops/hooked"
+Issues = "https://github.com/conmob-devsecops/hooked/issues"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/hooked/_version.py"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hooked"]
+include = ["src/hooked/data/**"]
+
+[tool.setuptools_scm]
+write_to = "src/hooked/_version.py"
+
+[tool.setuptools.package-data]
+hooked = ["data/*", "data/**/*"]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+addopts = ["--import-mode=importlib"]
+minversion = "6.0"
+testpaths = ["tests"]
+
+[project.scripts]
+hooked = "hooked.__main__:main"
+
+[tool.ruff.lint]
+select = ["I"]
+
+[tool.ruff.lint.isort]
+required-imports = ["from __future__ import annotations"]

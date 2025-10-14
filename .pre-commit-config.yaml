@@ -1,17 +1,43 @@
 repos:
-
-# basic hygene
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v6.0.0
-  hooks:
-    - id: check-added-large-files
-    - id: check-json
-    - id: check-merge-conflict
-    - id: check-yaml
-      args: [--allow-multiple-documents]
-
-# lint Github action workflows
-- repo: https://github.com/rhysd/actionlint
-  rev: v1.7.7
-  hooks:
-    - id: actionlint
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-illegal-windows-names
+      - id: check-json
+      - id: check-shebang-scripts-are-executable
+      - id: pretty-format-json
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-toml
+      - id: check-vcs-permalinks
+      - id: check-xml
+      - id: check-yaml
+      - id: debug-statements
+      - id: destroyed-symlinks
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: file-contents-sorter
+      - id: fix-byte-order-marker
+      - id: forbid-new-submodules
+      - id: forbid-submodules
+      - id: mixed-line-ending
+      - id: name-tests-test
+      - id: no-commit-to-branch
+      - id: requirements-txt-fixer
+      - id: sort-simple-yaml
+      - id: trailing-whitespace
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.20.0
+    hooks:
+      - id: pyupgrade
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.0
+    hooks:
+      - id: ruff-check
+      - id: ruff-format
