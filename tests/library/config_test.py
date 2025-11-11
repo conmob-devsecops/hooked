@@ -83,7 +83,7 @@ class TestConfig(unittest.TestCase):
                         "~/.config/hooked/config",
                         "-c",
                         "ebase.autoStash=true",
-                        "ull",
+                        "pull",
                         "--no-rebase",
                         "--no-edit",
                         "--strategy-option",

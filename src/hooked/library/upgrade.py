@@ -151,7 +151,7 @@ def get_url_ref(url: str, ref: str) -> str:
     return spec_url
 
 
-def self_upgrade(reset=False, freeze=False, rev: str | None = None) -> int:
+def self_upgrade(reset=False, freeze=False, rev: str = "") -> int:
     """
     upgrade           : branch -> latest; sha -> same; semver tag -> latest semver
     upgrade --reset   : ignore current ref, use latest semver tag

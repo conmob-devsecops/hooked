@@ -49,7 +49,7 @@ def _pre_commit_version():
     logger.debug(f"running {version}")
 
 
-def run_pre_commit_hook(cwd: str = None) -> int:
+def run_pre_commit_hook(cwd: str = "") -> int:
     """
     Serves as entrypoint for running pre-commit hooks on staged files in a git repository.
 
@@ -87,7 +87,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
             "Pre-commit upgrade skipped due to upgrade interval or skipped due environment setting."
         )
     else:
-        logger.always("Running hooked self-upgrade...")
+        logger.info("Running hooked self-upgrade...")
         self_upgrade()
 
         logger.debug("Updating hooked rules...")
@@ -105,7 +105,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
     if not cwd_path.exists() or not cwd_path.is_dir():
         raise RuntimeError(f"Provided path {cwd} does not exist or is not a directory")
 
-    logger.always("Starting to work in the target repository %s...", cwd_path)
+    logger.info("Starting to work in the target repository %s...", cwd_path)
 
     staged_files = run_cmd(
         ["git", "diff", "--cached", "--name-only", "--diff-filter", "ACM"],
@@ -146,7 +146,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         logger.debug("No .pre-commit-config.yaml found in repository.")
         return 0
 
-    logger.always(".pre-commit-config.yaml found. Running local pre-commit hooks...")
+    logger.info(".pre-commit-config.yaml found. Running local pre-commit hooks...")
 
     _env = os.environ.copy()
     _env["PRE_COMMIT_COLOR"] = "always"
@@ -169,6 +169,6 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         logger.warning("Pre-commit hooks failed. Please fix the issues and try again.")
         return 1
 
-    logger.always("pre-commit hook ran successfully.")
+    logger.info("pre-commit hook ran successfully.")
 
     return 0

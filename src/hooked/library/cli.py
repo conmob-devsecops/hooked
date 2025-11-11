@@ -59,8 +59,8 @@ def cmd_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--log-level",
         type=str,
-        choices=["ALWAYS", "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
-        default="ERROR",
+        choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
+        default="INFO",
         action=StoreProvided,
         help="Level (default: %(default)s)",
     )

@@ -78,7 +78,7 @@ def update_config_git_repo(base_dir: str, force: bool = False):
             config_dir,
             "-c",
             "ebase.autoStash=true",
-            "ull",
+            "pull",
             "--no-rebase",
             "--no-edit",
             "--strategy-option",

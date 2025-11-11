@@ -32,4 +32,4 @@ try:
 except ImportError:
     __version__ = "0+dev"
 __pkg_name__ = "hooked"
-__upgrade_interval_seconds__ = 10
+__upgrade_interval_seconds__ = 60 * 60 * 24 * 14  # 14 days
