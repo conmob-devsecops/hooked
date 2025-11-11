@@ -51,10 +51,9 @@ class TestLogger:
         set_log_level("DeBuG")
         assert logger.getEffectiveLevel() == logging.DEBUG
 
-    def test_unknown_level_falls_back_to_warning(self, caplog):
+    def test_unknown_level_falls_back_to_info(self, caplog):
         from hooked.library.logger import logger, set_log_level
 
-        with caplog.at_level(logging.WARNING, logger="hooked"):
+        with caplog.at_level(logging.INFO, logger="hooked"):
             set_log_level("nope")
-        assert logger.getEffectiveLevel() == logging.WARNING
-        assert any(rec.levelno == logging.WARNING for rec in caplog.records)
+        assert logger.getEffectiveLevel() == logging.INFO

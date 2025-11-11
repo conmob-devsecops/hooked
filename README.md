@@ -1,5 +1,5 @@
 <p align=center>
-  <img src="./docs/banner.jpg" alt="HOOKED" style="margin:0px" />
+  <img src="./docs/assets/banner.jpg" alt="HOOKED" style="margin:0px" />
 </p>
 
 [![GitHub Tag](https://img.shields.io/github/v/tag/conmob-devsecops/hooked?label=Version&color=e20074)](https://github.com/conmob-devsecops/hooked/releases)
@@ -31,7 +31,7 @@ You may check the installed versions of the dependencies on your system with
 this script.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/conmob-devsecops/hooked/refs/heads/main/check_prerequisites.sh | sh
+curl -fsSL https://raw.githubusercontent.com/conmob-devsecops/hooked/refs/heads/main/check_prerequisites.sh | bash
 ```
 
 Hooked itself will be installed via `pip`.
@@ -40,7 +40,7 @@ Hooked itself will be installed via `pip`.
 pip install git+https://github.com/conmob-devsecops/hooked.git@main
 ```
 
-⚠️ Some managed python environment (e.g., homebrew) don't allow you to install
+⚠️ Some managed python environments (e.g., homebrew) don't allow you to install
 hooked via pip directly. Please read [installation manual](./docs/install)
 for more details.
 
@@ -49,7 +49,7 @@ hooked.
 
 ```bash
 $ hooked version
-hooked version 0.1.0
+Hooked version: 0.1.0
 ```
 
 Next, we need a rule set installed, for hooked to work. An example rule set can

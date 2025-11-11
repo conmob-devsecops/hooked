@@ -93,6 +93,31 @@ def _check_git():
         ) from e
 
 
+def _get_precommit_version() -> str:
+    try:
+        return run_cmd(["pre-commit", "--version"]).stdout
+    except CommandError:
+        raise
+
+
+def _check_precommit():
+    try:
+        version_raw = _get_precommit_version()
+        version_split = version_raw.split()
+        try:
+            version = Version(version_split[2])
+            logger.info(f"pre-commit version {version} found.")
+        except (InvalidVersion, IndexError):
+            raise RuntimeError(
+                f"Unable to parse pre-commit version from: {version_raw}"
+            )
+    except CommandError as e:
+        logger.error("pre-commit is not installed or not found in PATH.")
+        raise RuntimeError(
+            "pre-commit is required but not installed or not found in PATH."
+        ) from e
+
+
 def check_pre_requisites() -> int:
     try:
         _check_gitleaks()
@@ -121,7 +146,53 @@ def check_pre_requisites() -> int:
         )
         return 1
 
+    try:
+        _check_precommit()
+    except RuntimeError as e:
+        logger.critical(
+            "There was a problem with determining if `pre-commit` is installed: %s.", e
+        )
+        logger.info(
+            "Please install `pre-commit` and ensure it is available in your PATH."
+        )
+        logger.info(
+            "For installation instructions, visit: https://pre-commit.com/#install"
+        )
+        return 1
+
     logger.info("All pre-requisites are met.")
+    return 0
+
+
+def disable(prune: bool = False) -> int:
+    logger.info("Disabling hooked...")
+
+    git_unset_global_hook_path()
+    logger.debug("Git global hooks removed")
+
+    git_unset_template_dir()
+    logger.debug("Git global template directory removed")
+
+    if prune:
+        remove_base_dir(get_base_dir())
+        logger.info("Config directory removed.")
+
+    logger.info("hooked successfully disabled.")
+
+    return 0
+
+
+def enable() -> int:
+    logger.info("Enabling hooked ...")
+
+    git_set_global_hook_path(get_hooks_dir())
+    logger.debug("Git global hooks installed")
+
+    git_set_template_dir(get_template_dir())
+    logger.debug("Git global template directory installed")
+
+    logger.info("hooked successfully enabled.")
+
     return 0
 
 
@@ -136,20 +207,5 @@ def install(rules: str, branch: str) -> int:
 
     git_set_template_dir(get_template_dir())
     logger.debug("Set Git global template directory.")
-
-    return 0
-
-
-def uninstall() -> int:
-    logger.debug("Uninstalling hooked...")
-
-    remove_base_dir(get_base_dir())
-    logger.debug("Config directory removed.")
-    git_unset_global_hook_path()
-    logger.debug("Reset Git global hooks path.")
-    git_unset_template_dir()
-    logger.debug("Reset Git global template directory.")
-
-    logger.debug("hooked uninstalled.")
 
     return 0

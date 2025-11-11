@@ -108,12 +108,12 @@ def cmd_parser() -> argparse.ArgumentParser:
     )
 
     # update rules subcommand
-    cmd_update_rules = sub.add_parser(
-        "update-rules",
+    cmd_update = sub.add_parser(
+        "update",
         help="update hooked rule set",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    cmd_update_rules.add_argument(
+    cmd_update.add_argument(
         "--force",
         action="store_true",
         default=False,
@@ -121,7 +121,7 @@ def cmd_parser() -> argparse.ArgumentParser:
     )
 
     # upgrade subcommand
-    cmd_upgrade = sub.add_parser("upgrade", help="Upgrade hooked installation")
+    cmd_upgrade = sub.add_parser("self-upgrade", help="Upgrade hooked installation")
     cmd_upgrade.add_argument(
         "--reset",
         action="store_true",
@@ -146,13 +146,32 @@ def cmd_parser() -> argparse.ArgumentParser:
         help="Indicates that this upgrade is triggered by the periodic check",
     )
 
+    # disable subcommand
+    cmd_disable = sub.add_parser(
+        "disable",
+        help="Disable hooked on your system",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    cmd_disable.add_argument(
+        "--prune",
+        action="store_true",
+        default=False,
+        help="Prune local config from the system",
+    )
+
+    # enable subcommand
+    sub.add_parser(
+        "enable",
+        help="Enables hooked on your system",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
     # cron subcommand
     cmd_cron = sub.add_parser(
         "cron",
         help="Serves as entrypoint to auto-update the ruleset and upgrade hooked itself",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-
     cmd_cron.add_argument(
         "--force",
         action="store_true",
@@ -164,13 +183,6 @@ def cmd_parser() -> argparse.ArgumentParser:
     sub.add_parser(
         "version",
         help="print the current version",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-
-    # uninstall subcommand
-    sub.add_parser(
-        "uninstall",
-        help="remove hooked hooks from your system",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
