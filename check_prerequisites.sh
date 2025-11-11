@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# AI generated script
+# AI NOTE: This file is AI-generated, there may be dragons.
 
 # Color codes
 RED='\033[0;31m'

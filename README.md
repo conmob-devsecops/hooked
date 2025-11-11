@@ -41,7 +41,7 @@ pip install git+https://github.com/conmob-devsecops/hooked.git@main
 ```
 
 ⚠️ Some managed python environments (e.g., homebrew) don't allow you to install
-hooked via pip directly. Please read [installation manual](./docs/install)
+hooked via pip directly. Please read [installation manual](./docs/install.md)
 for more details.
 
 By now hooked should be available on your shell. You may check the version of
