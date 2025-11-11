@@ -81,6 +81,11 @@ def run_pre_commit_hook(cwd: str = "") -> int:
         "true",
         "yes",
     )
+    skip_hook = os.getenv("HOOKED_SKIP", "false").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
 
     if (last_run and now - last_run < delta) and not skip_check:
         logger.debug(
@@ -105,7 +110,7 @@ def run_pre_commit_hook(cwd: str = "") -> int:
     if not cwd_path.exists() or not cwd_path.is_dir():
         raise RuntimeError(f"Provided path {cwd} does not exist or is not a directory")
 
-    logger.info("Starting to work in the target repository %s...", cwd_path)
+    logger.debug("Starting to work in the target repository %s...", cwd_path)
 
     staged_files = run_cmd(
         ["git", "diff", "--cached", "--name-only", "--diff-filter", "ACM"],
@@ -116,30 +121,34 @@ def run_pre_commit_hook(cwd: str = "") -> int:
         return 0
 
     logger.debug(f"Staged files: {staged_files.replace('\n', ', ')}")
-    logger.debug("Running pre-commit hooks...")
-    try:
-        pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
 
-        _env = os.environ.copy()
-        _env["GITLEAKS_CONFIG"] = os.path.join(config_dir, ".gitleaks.toml")
-        _env["PRE_COMMIT_COLOR"] = "always"
+    if not skip_hook:
+        logger.debug("Running pre-commit hooks...")
+        try:
+            pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
 
-        run_stream(
-            [
-                "pre-commit",
-                "run",
-                "--config",
-                pre_commit_config,
-            ],
-            env=_env,
-            cwd=str(cwd_path),
-        )
-    except CommandError as exc:
-        if not is_hook_error(exc):
-            raise
+            _env = os.environ.copy()
+            _env["GITLEAKS_CONFIG"] = os.path.join(config_dir, ".gitleaks.toml")
+            _env["PRE_COMMIT_COLOR"] = "always"
 
-        logger.warning("Pre-commit hooks failed. Please fix the issues and try again.")
-        return 1
+            run_stream(
+                [
+                    "pre-commit",
+                    "run",
+                    "--config",
+                    pre_commit_config,
+                ],
+                env=_env,
+                cwd=str(cwd_path),
+            )
+        except CommandError as exc:
+            if not is_hook_error(exc):
+                raise
+
+            logger.warning(
+                "Pre-commit hooks failed. Please fix the issues and try again."
+            )
+            return 1
 
     local_pre_commit_file = cwd_path.joinpath(".pre-commit-config.yaml")
     if not local_pre_commit_file.is_file():

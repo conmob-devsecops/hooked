@@ -197,15 +197,9 @@ def enable() -> int:
 
 
 def install(rules: str, branch: str) -> int:
-    logger.debug("Installing hooked...")
+    logger.info("Installing hooked rules ...")
     copy_hooked_files()
 
     get_config_git_repo(get_base_dir(), rules, branch)
 
-    git_set_global_hook_path(get_hooks_dir())
-    logger.debug("Set Git global hooks path.")
-
-    git_set_template_dir(get_template_dir())
-    logger.debug("Set Git global template directory.")
-
-    return 0
+    return enable()
