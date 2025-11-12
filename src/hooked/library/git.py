@@ -77,9 +77,11 @@ def git_get_tags(url: str) -> list[tuple[str, str]]:
     if clean.startswith("git+"):
         clean = clean[4:]
 
-    out = run_cmd(["git", "ls-remote", "--tags", "--refs", clean]).stdout
+    stdout = run_cmd(["git", "ls-remote", "--tags", "--refs", clean]).stdout
     tags = []
-    for line in out.splitlines():
+    if stdout is None:
+        return tags
+    for line in stdout.splitlines():
         sha, ref = line.split("\t")
         if ref.startswith("refs/tags/"):
             tag = ref.split("/", 2)[2]
@@ -96,8 +98,10 @@ def git_get_last_branch_commit(url: str, branch: str) -> str | None:
     clean = url
     if clean.startswith("git+"):
         clean = clean[4:]
-    out = run_cmd(["git", "ls-remote", "--heads", clean, branch]).stdout
-    for line in out.splitlines():
+    stdout = run_cmd(["git", "ls-remote", "--heads", clean, branch]).stdout
+    if stdout is None:
+        return None
+    for line in stdout.splitlines():
         sha, ref = line.split("\t")
         if ref == f"refs/heads/{branch}":
             return sha

@@ -77,13 +77,13 @@ def _log_cmd(cmd: Sequence[str]) -> None:
 
 def _handle_failure(
     result: CommandResult, stderr: bool = False, stdout: bool = False
-) -> None:
-    """Log stderr AND stdout when a command fails, then raise CommandError."""
+) -> CommandError:
+    """Log stderr AND stdout when a command fails, then returns CommandError."""
     if result.stderr and stderr:
         logger.error("stderr:\n%s", result.stderr)
     if result.stdout and stdout:
         logger.error("stdout:\n%s", result.stdout)
-    raise CommandError(result)
+    return CommandError(result)
 
 
 def run_cmd(
@@ -112,16 +112,18 @@ def run_cmd(
             check=False,
         )
     except FileNotFoundError as e:
-        _handle_failure(CommandResult(cmd, 127, None, str(e)), stderr=True, stdout=True)
+        raise _handle_failure(
+            CommandResult(cmd, 127, None, str(e)), stderr=True, stdout=True
+        )
     except sp.TimeoutExpired as e:
         rc = -signal.SIGALRM
-        _handle_failure(CommandResult(cmd, rc, e.stdout, e.stderr))
+        raise _handle_failure(CommandResult(cmd, rc, str(e.stdout), str(e.stderr)))
 
     result = CommandResult(
         cmd, completed.returncode, completed.stdout.strip(), completed.stderr.strip()
     )
     if not result.ok:
-        _handle_failure(result)
+        raise _handle_failure(result)
     return result
 
 
@@ -148,7 +150,7 @@ def run_stream(
             bufsize=1,  # line-buffered
         )
     except FileNotFoundError as e:
-        _handle_failure(CommandResult(cmd, 127, None, str(e)))
+        raise _handle_failure(CommandResult(cmd, 127, None, str(e)))
 
     out_buf: list[str] = []
     err_buf: list[str] = []
@@ -182,7 +184,7 @@ def run_stream(
         "".join(err_buf) if err_buf else None,
     )
     if not result.ok:
-        _handle_failure(result)
+        raise _handle_failure(result)
     return result
 
 

@@ -76,12 +76,11 @@ def get_install_info() -> InstallInfo:
     install_info = InstallInfo()
     try:
         raw = dist.read_text("direct_url.json")
+        if raw is None:
+            raise Exception()
         info = json.loads(raw)
         install_info.url = info.get("url")
         vcs = info.get("vcs_info", {})
-        dir_info = info.get("dir_info", {})
-        if dir_info:
-            install_info.editable = dir_info.get("editable", False)
         if install_info.url and vcs and vcs.get("vcs") == "git":
             install_info.is_vcs = True
             install_info.requested_revision = vcs.get("requested_revision")
@@ -104,7 +103,7 @@ def get_latest_release(tags: list[tuple[str, str]]) -> str | None:
     semver_tags: list[tuple[Version, str]] = []
 
     # filter all semver tags
-    for tag, _sha in tags:
+    for tag, _ in tags:
         if not SEMVER_TAG_RE.match(tag):
             continue
         try:
@@ -132,13 +131,17 @@ def get_sha_for_tag(tags: list[tuple[str, str]], tag: str) -> str | None:
     return None
 
 
-def _is_semver_tag(ref: str) -> bool:
+def _is_semver_tag(ref: str | None) -> bool:
     """Checks if given ref is a semver tag."""
+    if ref is None:
+        return False
     return bool(ref and SEMVER_TAG_RE.match(ref))
 
 
-def _is_sha(ref: str) -> bool:
+def _is_sha(ref: str | None) -> bool:
     """Checks if given ref is an SHA."""
+    if ref is None:
+        return False
     return bool(ref and SHA_RE.match(ref))
 
 
@@ -151,7 +154,7 @@ def get_url_ref(url: str, ref: str) -> str:
     return spec_url
 
 
-def self_upgrade(reset=False, freeze=False, rev: str = "") -> int:
+def self_upgrade(reset=False, freeze=False, rev: str | None = None) -> int:
     """
     upgrade           : branch -> latest; sha -> same; semver tag -> latest semver
     upgrade --reset   : ignore current ref, use latest semver tag
@@ -216,6 +219,9 @@ def self_upgrade(reset=False, freeze=False, rev: str = "") -> int:
                 # noop, keep default target_ref of latest semver tag
                 logger.debug("regular upgrade to latest: %s", target_ref)
                 pass
+
+    if target_ref is None:
+        return 1
 
     spec = get_url_ref(info.url, target_ref)
     logger.debug("Specification: %s", spec)

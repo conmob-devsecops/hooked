@@ -38,16 +38,16 @@ class StoreProvided(argparse.Action):
 
 
 class HookedArgumentParser(argparse.ArgumentParser):
-    def parse_args(self, args=None, namespace=None):
-        namespace = super().parse_args(args, namespace)
+    def parse_args(self, args=None, namespace=None):  # pyright: ignore[reportIncompatibleMethodOverride]
+        args = super().parse_args(args, namespace)
         # --freeze requires rev for the 'upgrade' command
         if (
-            getattr(namespace, "cmd", None) == "upgrade"
-            and getattr(namespace, "freeze", False)
-            and not getattr(namespace, "rev", None)
+            getattr(args, "cmd", None) == "upgrade"
+            and getattr(args, "freeze", False)
+            and not getattr(args, "rev", None)
         ):
             self.error("--freeze requires a 'rev' (branch/tag/sha) to be provided")
-        return namespace
+        return args
 
 
 def cmd_parser() -> argparse.ArgumentParser:

@@ -49,7 +49,7 @@ from hooked.library.logger import logger
 
 def _get_gitleaks_version() -> str:
     try:
-        return run_cmd(["gitleaks", "--version"]).stdout
+        return str(run_cmd(["gitleaks", "--version"]).stdout)
     except CommandError:
         raise
 
@@ -72,7 +72,7 @@ def _check_gitleaks():
 
 def _get_git_version() -> str:
     try:
-        return run_cmd(["git", "--version"]).stdout
+        return str(run_cmd(["git", "--version"]).stdout)
     except CommandError:
         raise
 
@@ -95,7 +95,7 @@ def _check_git():
 
 def _get_precommit_version() -> str:
     try:
-        return run_cmd(["pre-commit", "--version"]).stdout
+        return str(run_cmd(["pre-commit", "--version"]).stdout)
     except CommandError:
         raise
 
