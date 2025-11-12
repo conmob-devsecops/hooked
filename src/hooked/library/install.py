@@ -27,6 +27,8 @@
 
 from __future__ import annotations
 
+import re
+
 from packaging.version import InvalidVersion, Version
 
 from hooked import (
@@ -52,6 +54,16 @@ from hooked.library.git import (
 from hooked.library.logger import logger
 
 
+def _parse_version(v: str) -> Version:
+    try:
+        return Version(v)
+    except InvalidVersion:
+        m = re.search(r"(\d+\.\d+\.\d+)", v)
+        if m is None:
+            return Version("0.0.0")
+        return Version(m.group(0))
+
+
 def _get_gitleaks_version() -> str:
     try:
         return str(run_cmd(["gitleaks", "--version"]).stdout)
@@ -64,7 +76,7 @@ def _check_gitleaks():
         version_raw = _get_gitleaks_version()
         version_split = version_raw.split()
         try:
-            version = Version(version_split[2])
+            version = _parse_version(version_split[2])
             logger.info(f"gitleaks version {version} found.")
         except (InvalidVersion, IndexError):
             raise RuntimeError(f"Unable to parse gitleaks version from: {version_raw}")
@@ -97,7 +109,7 @@ def _check_git():
         version_raw = _get_git_version()
         version_split = version_raw.split()
         try:
-            version = Version(version_split[2])
+            version = _parse_version(version_split[2])
             logger.info(f"git version {version} found.")
         except (InvalidVersion, IndexError):
             raise RuntimeError(f"Unable to parse git version from: {version_raw}")
