@@ -38,16 +38,16 @@ class StoreProvided(argparse.Action):
 
 
 class HookedArgumentParser(argparse.ArgumentParser):
-    def parse_args(self, args=None, namespace=None):
-        namespace = super().parse_args(args, namespace)
+    def parse_args(self, args=None, namespace=None):  # pyright: ignore[reportIncompatibleMethodOverride]
+        args = super().parse_args(args, namespace)
         # --freeze requires rev for the 'upgrade' command
         if (
-            getattr(namespace, "cmd", None) == "upgrade"
-            and getattr(namespace, "freeze", False)
-            and not getattr(namespace, "rev", None)
+            getattr(args, "cmd", None) == "upgrade"
+            and getattr(args, "freeze", False)
+            and not getattr(args, "rev", None)
         ):
             self.error("--freeze requires a 'rev' (branch/tag/sha) to be provided")
-        return namespace
+        return args
 
 
 def cmd_parser() -> argparse.ArgumentParser:
@@ -59,8 +59,8 @@ def cmd_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--log-level",
         type=str,
-        choices=["ALWAYS", "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
-        default="ERROR",
+        choices=["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"],
+        default="INFO",
         action=StoreProvided,
         help="Level (default: %(default)s)",
     )
@@ -108,12 +108,12 @@ def cmd_parser() -> argparse.ArgumentParser:
     )
 
     # update rules subcommand
-    cmd_update_rules = sub.add_parser(
-        "update-rules",
+    cmd_update = sub.add_parser(
+        "update",
         help="update hooked rule set",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    cmd_update_rules.add_argument(
+    cmd_update.add_argument(
         "--force",
         action="store_true",
         default=False,
@@ -121,7 +121,7 @@ def cmd_parser() -> argparse.ArgumentParser:
     )
 
     # upgrade subcommand
-    cmd_upgrade = sub.add_parser("upgrade", help="Upgrade hooked installation")
+    cmd_upgrade = sub.add_parser("self-upgrade", help="Upgrade hooked installation")
     cmd_upgrade.add_argument(
         "--reset",
         action="store_true",
@@ -139,11 +139,25 @@ def cmd_parser() -> argparse.ArgumentParser:
         nargs="?",
         help="Switch to given branch/tag/sha and install from there",
     )
-    cmd_upgrade.add_argument(
-        "--periodic",
+
+    # disable subcommand
+    cmd_disable = sub.add_parser(
+        "disable",
+        help="Disable hooked on your system",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    cmd_disable.add_argument(
+        "--prune",
         action="store_true",
         default=False,
-        help="Indicates that this upgrade is triggered by the periodic check",
+        help="Prune local config from the system",
+    )
+
+    # enable subcommand
+    sub.add_parser(
+        "enable",
+        help="Enables hooked on your system",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     # cron subcommand
@@ -152,7 +166,6 @@ def cmd_parser() -> argparse.ArgumentParser:
         help="Serves as entrypoint to auto-update the ruleset and upgrade hooked itself",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-
     cmd_cron.add_argument(
         "--force",
         action="store_true",
@@ -167,10 +180,10 @@ def cmd_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    # uninstall subcommand
+    # check subcommand
     sub.add_parser(
-        "uninstall",
-        help="remove hooked hooks from your system",
+        "check",
+        help="Check software prerequistites of hooked",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 

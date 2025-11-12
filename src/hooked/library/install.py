@@ -29,6 +29,11 @@ from __future__ import annotations
 
 from packaging.version import InvalidVersion, Version
 
+from hooked import (
+    __min_git_version__,
+    __min_gitleaks_version__,
+    __min_precommit_version__,
+)
 from hooked.library.cmd_util import CommandError, run_cmd
 from hooked.library.config import get_config_git_repo
 from hooked.library.files import (
@@ -49,7 +54,7 @@ from hooked.library.logger import logger
 
 def _get_gitleaks_version() -> str:
     try:
-        return run_cmd(["gitleaks", "--version"]).stdout
+        return str(run_cmd(["gitleaks", "--version"]).stdout)
     except CommandError:
         raise
 
@@ -63,8 +68,18 @@ def _check_gitleaks():
             logger.info(f"gitleaks version {version} found.")
         except (InvalidVersion, IndexError):
             raise RuntimeError(f"Unable to parse gitleaks version from: {version_raw}")
+        if version < __min_gitleaks_version__:
+            raise RuntimeError(
+                f"gitleaks must have minimum version of {__min_gitleaks_version__}"
+            )
     except CommandError as e:
         logger.error("gitleaks is not installed or not found in PATH.")
+        logger.info(
+            "Please install `gitleaks` and ensure it is available in your PATH."
+        )
+        logger.info(
+            "For installation instructions, visit: https://github.com/gitleaks/gitleaks"
+        )
         raise RuntimeError(
             "gitleaks is required but not installed or not found in PATH."
         ) from e
@@ -72,7 +87,7 @@ def _check_gitleaks():
 
 def _get_git_version() -> str:
     try:
-        return run_cmd(["git", "--version"]).stdout
+        return str(run_cmd(["git", "--version"]).stdout)
     except CommandError:
         raise
 
@@ -86,70 +101,106 @@ def _check_git():
             logger.info(f"git version {version} found.")
         except (InvalidVersion, IndexError):
             raise RuntimeError(f"Unable to parse git version from: {version_raw}")
+        if version < __min_git_version__:
+            raise RuntimeError(
+                f"git must have minimum version of {__min_git_version__}"
+            )
     except CommandError as e:
         logger.error("git is not installed or not found in PATH.")
+        logger.info("Please install `git` and ensure it is available in your PATH.")
+        logger.info("Download `git` from: https://git-scm.com/downloads")
+        logger.info(
+            "For installation instructions, visit: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git"
+        )
         raise RuntimeError(
             "git is required but not installed or not found in PATH."
+        ) from e
+
+
+def _get_precommit_version() -> str:
+    try:
+        return str(run_cmd(["pre-commit", "--version"]).stdout)
+    except CommandError:
+        raise
+
+
+def _check_precommit():
+    try:
+        version_raw = _get_precommit_version()
+        version_split = version_raw.split()
+        try:
+            version = Version(version_split[1])
+            logger.info(f"pre-commit version {version} found.")
+        except (InvalidVersion, IndexError):
+            raise RuntimeError(
+                f"Unable to parse pre-commit version from: {version_raw}"
+            )
+        if version < __min_precommit_version__:
+            raise RuntimeError(
+                f"pre-commit must have minimum version of {__min_precommit_version__}"
+            )
+    except CommandError as e:
+        logger.error("pre-commit is not installed or not found in PATH.")
+        logger.info(
+            "Please install `pre-commit` and ensure it is available in your PATH."
+        )
+        logger.info(
+            "For installation instructions, visit: https://pre-commit.com/#install"
+        )
+        raise RuntimeError(
+            "pre-commit is required but not installed or not found in PATH."
         ) from e
 
 
 def check_pre_requisites() -> int:
     try:
         _check_gitleaks()
-    except RuntimeError as e:
-        logger.critical(
-            "There was a problem with determining if `gitleaks` is installed: %s.", e
-        )
-        logger.info(
-            "Please install `gitleaks` and ensure it is available in your PATH."
-        )
-        logger.info(
-            "For installation instructions, visit: https://github.com/gitleaks/gitleaks"
-        )
-        return 1
-
-    try:
         _check_git()
+        _check_precommit()
     except RuntimeError as e:
-        logger.critical(
-            "There was a problem with determining if `git` is installed: %s.", e
-        )
-        logger.info("Please install `git` and ensure it is available in your PATH.")
-        logger.info("Download `git` from: https://git-scm.com/downloads")
-        logger.info(
-            "For installation instructions, visit: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git"
-        )
+        logger.critical(e)
         return 1
 
     logger.info("All pre-requisites are met.")
     return 0
 
 
+def disable(prune: bool = False) -> int:
+    logger.info("Disabling hooked...")
+
+    git_unset_global_hook_path()
+    logger.debug("Git global hooks removed")
+
+    git_unset_template_dir()
+    logger.debug("Git global template directory removed")
+
+    if prune:
+        remove_base_dir(get_base_dir())
+        logger.info("Config directory removed.")
+
+    logger.info("hooked successfully disabled.")
+
+    return 0
+
+
+def enable() -> int:
+    logger.info("Enabling hooked ...")
+
+    git_set_global_hook_path(get_hooks_dir())
+    logger.debug("Git global hooks installed")
+
+    git_set_template_dir(get_template_dir())
+    logger.debug("Git global template directory installed")
+
+    logger.info("hooked successfully enabled.")
+
+    return 0
+
+
 def install(rules: str, branch: str) -> int:
-    logger.debug("Installing hooked...")
+    logger.info("Installing hooked rules ...")
     copy_hooked_files()
 
     get_config_git_repo(get_base_dir(), rules, branch)
 
-    git_set_global_hook_path(get_hooks_dir())
-    logger.debug("Set Git global hooks path.")
-
-    git_set_template_dir(get_template_dir())
-    logger.debug("Set Git global template directory.")
-
-    return 0
-
-
-def uninstall() -> int:
-    logger.debug("Uninstalling hooked...")
-
-    remove_base_dir(get_base_dir())
-    logger.debug("Config directory removed.")
-    git_unset_global_hook_path()
-    logger.debug("Reset Git global hooks path.")
-    git_unset_template_dir()
-    logger.debug("Reset Git global template directory.")
-
-    logger.debug("hooked uninstalled.")
-
-    return 0
+    return enable()

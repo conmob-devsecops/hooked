@@ -71,26 +71,41 @@ class InstallTests(unittest.TestCase):
     @patch("hooked.library.install.git_unset_template_dir")
     @patch("hooked.library.install.git_unset_global_hook_path")
     @patch("hooked.library.install.remove_base_dir")
-    def test_uninstall(
+    def test_disable(
         self,
         remove_base_dir,
         git_unset_global_hook_path,
         git_unset_template_dir,
     ):
-        retval = lib.uninstall()
+        retval = lib.disable(True)
         self.assertEqual(0, retval)
 
         remove_base_dir.assert_called_once_with(get_base_dir())
         git_unset_global_hook_path.assert_called_once()
         git_unset_template_dir.assert_called_once()
 
+    @patch("hooked.library.install.git_set_template_dir")
+    @patch("hooked.library.install.git_set_global_hook_path")
+    def test_enable(
+        self,
+        git_set_global_hook_path,
+        git_set_template_dir,
+    ):
+        retval = lib.enable()
+        self.assertEqual(0, retval)
+
+        git_set_global_hook_path.assert_called_once_with(get_hooks_dir())
+        git_set_template_dir.assert_called_once_with(get_template_dir())
+
+    @patch("hooked.library.install._check_precommit")
     @patch("hooked.library.install._check_git")
     @patch("hooked.library.install._check_gitleaks")
-    def test_check_pre_requisities(self, _check_gitleaks, _check_git):
+    def test_check_pre_requisities(self, _check_gitleaks, _check_git, _check_precommit):
         retval = lib.check_pre_requisites()
         self.assertEqual(0, retval)
         _check_gitleaks.assert_called_once()
         _check_git.assert_called_once()
+        _check_precommit.assert_called_once()
 
     @patch("hooked.library.install._check_git")
     @patch("hooked.library.install._check_gitleaks")

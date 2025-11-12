@@ -50,7 +50,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     # default log level is ERROR, can be overridden by HOOKED_LOG_LEVEL env var
-    log_level = os.getenv("HOOKED_LOG_LEVEL", "error").upper()
+    log_level = os.getenv("HOOKED_LOG_LEVEL", "info").upper()
 
     # override log level if --log-level was provided
     if getattr(args, "log_level_provided", True):
@@ -58,65 +58,77 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     set_log_level(log_level)
 
-    logger.debug(f"hooked version {__version__}")
+    logger.debug(f"Hooked version: {__version__}")
     logger.debug(f"Arguments: {args}")
     logger.debug(f"Log level set to {logger.level}")
 
-    if args.cmd == "version":
-        sys.stdout.write(f"hooked version {__version__}\n")
-        sys.stdout.flush()
-        return 0
-
-    if args.cmd == "install":
-        from hooked.library.install import install
-
-        return install(args.rules[0], branch=args.branch)
-
-    if args.cmd == "update-rules":
-        logger.debug("Updating hooked rule set...")
-
-        base_dir = get_base_dir()
-        update_config_git_repo(base_dir)
-        logger.debug("Rule set updated.")
-
-        return 0
-
-    if args.cmd == "upgrade" and args.periodic:
-        logger.debug("Running hooked periodic job...")
-
-        last_run = get_last_upgrade_timestamp()
-        now = datetime.now()
-        delta = timedelta(seconds=__upgrade_interval_seconds__)
-        if last_run and now - last_run < delta and not args.force:
-            logger.info(
-                "Last upgrade was %s, skipping upgrade (interval %s)", last_run, delta
-            )
+    match args.cmd:
+        case "version":
+            sys.stdout.write(f"Hooked version: {__version__}\n")
+            sys.stdout.flush()
             return 0
 
-        set_last_upgrade_timestamp()
+        case "update":
+            logger.info("Updating hooked rule set ...")
+            base_dir = get_base_dir()
+            update_config_git_repo(base_dir)
+            logger.info("Rule set updated.")
+            return 0
 
-        logger.debug("Upgrading hooked installation...")
-        self_upgrade()
+        case "upgrade":
+            last_run = get_last_upgrade_timestamp()
+            now = datetime.now()
+            delta = timedelta(seconds=__upgrade_interval_seconds__)
+            if last_run and now - last_run < delta and not args.force:
+                logger.debug(
+                    "Last upgrade was %s, skipping upgrade (interval %s)",
+                    last_run,
+                    delta,
+                )
+                return 0
+            set_last_upgrade_timestamp()
+            logger.info("Upgrading hooked installation ...")
+            self_upgrade()
+            logger.info("Updating hooked rule set ...")
+            update_config_git_repo(get_base_dir())
+            copy_hooked_files()
+            return 0
 
-        logger.debug("Updating hooked ruleset...")
-        update_config_git_repo(get_base_dir())
+        case "self-upgrade":
+            return self_upgrade(reset=args.reset, freeze=args.freeze, rev=args.rev)
 
-        copy_hooked_files()
+        case "install":
+            from hooked.library.install import check_pre_requisites, install
 
-        return 0
+            if check_pre_requisites() > 0:
+                return 1
+            return install(args.rules[0], branch=args.branch)
 
-    if args.cmd == "upgrade":
-        return self_upgrade(reset=args.reset, freeze=args.freeze, rev=args.rev)
+        case "disable":
+            from hooked.library.install import disable
 
-    if args.cmd == "uninstall":
-        from hooked.library.install import uninstall
+            return disable(args.prune)
 
-        return uninstall()
+        case "enable":
+            from hooked.library.install import check_pre_requisites, enable
 
-    if args.cmd == "run" and getattr(args, "cmd_run", None) == "pre-commit":
-        from hooked.library.hooks.pre_commit import run_pre_commit_hook
+            if check_pre_requisites() > 0:
+                return 1
+            return enable()
 
-        return run_pre_commit_hook(args.path)
+        case "run":
+            if getattr(args, "cmd_run", None) != "pre-commit":
+                logger.error("run can only be invoked with pre-commit")
+                return 1
+
+            from hooked.library.hooks.pre_commit import run_pre_commit_hook
+
+            return run_pre_commit_hook(args.path)
+
+        case "check":
+            from hooked.library.install import check_pre_requisites
+
+            return check_pre_requisites()
 
     parser.print_help()
     return 0

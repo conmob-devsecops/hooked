@@ -49,7 +49,7 @@ def _pre_commit_version():
     logger.debug(f"running {version}")
 
 
-def run_pre_commit_hook(cwd: str = None) -> int:
+def run_pre_commit_hook(cwd: str = "") -> int:
     """
     Serves as entrypoint for running pre-commit hooks on staged files in a git repository.
 
@@ -81,13 +81,18 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         "true",
         "yes",
     )
+    skip_hook = os.getenv("HOOKED_SKIP", "false").lower() in (
+        "1",
+        "true",
+        "yes",
+    )
 
     if (last_run and now - last_run < delta) and not skip_check:
         logger.debug(
             "Pre-commit upgrade skipped due to upgrade interval or skipped due environment setting."
         )
     else:
-        logger.always("Running hooked self-upgrade...")
+        logger.info("Running hooked self-upgrade...")
         self_upgrade()
 
         logger.debug("Updating hooked rules...")
@@ -105,7 +110,7 @@ def run_pre_commit_hook(cwd: str = None) -> int:
     if not cwd_path.exists() or not cwd_path.is_dir():
         raise RuntimeError(f"Provided path {cwd} does not exist or is not a directory")
 
-    logger.always("Starting to work in the target repository %s...", cwd_path)
+    logger.debug("Starting to work in the target repository %s...", cwd_path)
 
     staged_files = run_cmd(
         ["git", "diff", "--cached", "--name-only", "--diff-filter", "ACM"],
@@ -116,37 +121,41 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         return 0
 
     logger.debug(f"Staged files: {staged_files.replace('\n', ', ')}")
-    logger.debug("Running pre-commit hooks...")
-    try:
-        pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
 
-        _env = os.environ.copy()
-        _env["GITLEAKS_CONFIG"] = os.path.join(config_dir, ".gitleaks.toml")
-        _env["PRE_COMMIT_COLOR"] = "always"
+    if not skip_hook:
+        logger.debug("Running pre-commit hooks...")
+        try:
+            pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
 
-        run_stream(
-            [
-                "pre-commit",
-                "run",
-                "--config",
-                pre_commit_config,
-            ],
-            env=_env,
-            cwd=str(cwd_path),
-        )
-    except CommandError as exc:
-        if not is_hook_error(exc):
-            raise
+            _env = os.environ.copy()
+            _env["GITLEAKS_CONFIG"] = os.path.join(config_dir, ".gitleaks.toml")
+            _env["PRE_COMMIT_COLOR"] = "always"
 
-        logger.warning("Pre-commit hooks failed. Please fix the issues and try again.")
-        return 1
+            run_stream(
+                [
+                    "pre-commit",
+                    "run",
+                    "--config",
+                    pre_commit_config,
+                ],
+                env=_env,
+                cwd=str(cwd_path),
+            )
+        except CommandError as exc:
+            if not is_hook_error(exc):
+                raise
+
+            logger.warning(
+                "Pre-commit hooks failed. Please fix the issues and try again."
+            )
+            return 1
 
     local_pre_commit_file = cwd_path.joinpath(".pre-commit-config.yaml")
     if not local_pre_commit_file.is_file():
         logger.debug("No .pre-commit-config.yaml found in repository.")
         return 0
 
-    logger.always(".pre-commit-config.yaml found. Running local pre-commit hooks...")
+    logger.info(".pre-commit-config.yaml found. Running local pre-commit hooks...")
 
     _env = os.environ.copy()
     _env["PRE_COMMIT_COLOR"] = "always"
@@ -169,6 +178,6 @@ def run_pre_commit_hook(cwd: str = None) -> int:
         logger.warning("Pre-commit hooks failed. Please fix the issues and try again.")
         return 1
 
-    logger.always("pre-commit hook ran successfully.")
+    logger.info("pre-commit hook ran successfully.")
 
     return 0
