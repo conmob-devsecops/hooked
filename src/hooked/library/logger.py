@@ -32,9 +32,7 @@ import logging
 logger = logging.getLogger("hooked")
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
-formatter = logging.Formatter(
-    fmt="[hooked | %(asctime)s %(levelname)s] %(message)s", datefmt="%H:%M:%S"
-)
+formatter = logging.Formatter(fmt="[hooked] %(levelname)s %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 

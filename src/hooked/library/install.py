@@ -129,7 +129,7 @@ def _check_precommit():
         version_raw = _get_precommit_version()
         version_split = version_raw.split()
         try:
-            version = Version(version_split[2])
+            version = Version(version_split[1])
             logger.info(f"pre-commit version {version} found.")
         except (InvalidVersion, IndexError):
             raise RuntimeError(
@@ -157,7 +157,8 @@ def check_pre_requisites() -> int:
         _check_gitleaks()
         _check_git()
         _check_precommit()
-    except RuntimeError:
+    except RuntimeError as e:
+        logger.critical(e)
         return 1
 
     logger.info("All pre-requisites are met.")
