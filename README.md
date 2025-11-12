@@ -5,8 +5,8 @@
 [![GitHub Tag](https://img.shields.io/github/v/tag/conmob-devsecops/hooked?label=Version&color=e20074)](https://github.com/conmob-devsecops/hooked/releases)
 ![GitHub License](https://img.shields.io/github/license/conmob-devsecops/hooked)
 ![Python](https://img.shields.io/badge/Python-%E2%89%A5%203.12-%233776AB?logo=Python&logoColor=%23ffffff)
-![Git](https://img.shields.io/badge/Git-%E2%89%A5%202.9.0-%23F05032?logo=Git&logoColor=%23ffffff)
-[![pre-commit](https://img.shields.io/badge/pre--commit-%E2%89%A5%204.0.0-%23FAB040?logo=pre-commit&logoColor=ffffff)](https://pre-commit.com/)
+![Git](https://img.shields.io/badge/Git-%E2%89%A5%202.50.0-%23F05032?logo=Git&logoColor=%23ffffff)
+[![pre-commit](https://img.shields.io/badge/pre--commit-%E2%89%A5%204.3.0-%23FAB040?logo=pre-commit&logoColor=ffffff)](https://pre-commit.com/)
 
 ## Hooked
 
