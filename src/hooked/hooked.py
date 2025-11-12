@@ -76,10 +76,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
 
         case "upgrade":
-            if not args.periodic:
-                logger.error("upgrade must be invoked with periodic flag")
-                return 1
-            logger.debug("Running hooked periodic job ...")
             last_run = get_last_upgrade_timestamp()
             now = datetime.now()
             delta = timedelta(seconds=__upgrade_interval_seconds__)

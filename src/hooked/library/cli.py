@@ -139,12 +139,6 @@ def cmd_parser() -> argparse.ArgumentParser:
         nargs="?",
         help="Switch to given branch/tag/sha and install from there",
     )
-    cmd_upgrade.add_argument(
-        "--periodic",
-        action="store_true",
-        default=False,
-        help="Indicates that this upgrade is triggered by the periodic check",
-    )
 
     # disable subcommand
     cmd_disable = sub.add_parser(
