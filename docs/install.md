@@ -31,6 +31,7 @@ pipx install git+https://github.com/conmob-devsecops/hooked.git@main
 
 # check if hooked is installed
 pipx list
+pipx ensurepath
 hooked version
 
 # uninstall hooked
