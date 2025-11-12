@@ -24,15 +24,7 @@ frameworks may be added in the future.
 - **Python** ≥ 3.12 [Website](https://www.python.org/) | [Github](https://github.com/python/)
 - **Git** ≥ 2.9.0 [Website](https://git-scm.com/) | [Git](https://git.kernel.org/pub/scm/git/git.git)
 - **Gitleaks** ≥ 8.28.0 [Website](https://gitleaks.io/) | [Github](https://github.com/gitleaks/gitleaks)
-- **pre-commit** ≥ 4.0.0 [Website](https://pre-commit.com/) | [Githu
-  b](https://github.com/pre-commit/pre-commit)
-
-You may check the installed versions of the dependencies on your system with
-this script.
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/conmob-devsecops/hooked/refs/heads/main/check_prerequisites.sh | bash
-```
+- **pre-commit** ≥ 4.0.0 [Website](https://pre-commit.com/) | [Github](https://github.com/pre-commit/pre-commit)
 
 Hooked itself will be installed via `pip`.
 
