@@ -186,4 +186,11 @@ def cmd_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
+    # check subcommand
+    sub.add_parser(
+        "check",
+        help="Check software prerequistites of hooked",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
     return parser

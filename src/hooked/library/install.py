@@ -29,6 +29,11 @@ from __future__ import annotations
 
 from packaging.version import InvalidVersion, Version
 
+from hooked import (
+    __min_git_version__,
+    __min_gitleaks_version__,
+    __min_precommit_version__,
+)
 from hooked.library.cmd_util import CommandError, run_cmd
 from hooked.library.config import get_config_git_repo
 from hooked.library.files import (
@@ -63,8 +68,18 @@ def _check_gitleaks():
             logger.info(f"gitleaks version {version} found.")
         except (InvalidVersion, IndexError):
             raise RuntimeError(f"Unable to parse gitleaks version from: {version_raw}")
+        if version < __min_gitleaks_version__:
+            raise RuntimeError(
+                f"gitleaks must have minimum version of {__min_gitleaks_version__}"
+            )
     except CommandError as e:
         logger.error("gitleaks is not installed or not found in PATH.")
+        logger.info(
+            "Please install `gitleaks` and ensure it is available in your PATH."
+        )
+        logger.info(
+            "For installation instructions, visit: https://github.com/gitleaks/gitleaks"
+        )
         raise RuntimeError(
             "gitleaks is required but not installed or not found in PATH."
         ) from e
@@ -86,8 +101,17 @@ def _check_git():
             logger.info(f"git version {version} found.")
         except (InvalidVersion, IndexError):
             raise RuntimeError(f"Unable to parse git version from: {version_raw}")
+        if version < __min_git_version__:
+            raise RuntimeError(
+                f"git must have minimum version of {__min_git_version__}"
+            )
     except CommandError as e:
         logger.error("git is not installed or not found in PATH.")
+        logger.info("Please install `git` and ensure it is available in your PATH.")
+        logger.info("Download `git` from: https://git-scm.com/downloads")
+        logger.info(
+            "For installation instructions, visit: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git"
+        )
         raise RuntimeError(
             "git is required but not installed or not found in PATH."
         ) from e
@@ -111,8 +135,18 @@ def _check_precommit():
             raise RuntimeError(
                 f"Unable to parse pre-commit version from: {version_raw}"
             )
+        if version < __min_precommit_version__:
+            raise RuntimeError(
+                f"pre-commit must have minimum version of {__min_precommit_version__}"
+            )
     except CommandError as e:
         logger.error("pre-commit is not installed or not found in PATH.")
+        logger.info(
+            "Please install `pre-commit` and ensure it is available in your PATH."
+        )
+        logger.info(
+            "For installation instructions, visit: https://pre-commit.com/#install"
+        )
         raise RuntimeError(
             "pre-commit is required but not installed or not found in PATH."
         ) from e
@@ -121,43 +155,9 @@ def _check_precommit():
 def check_pre_requisites() -> int:
     try:
         _check_gitleaks()
-    except RuntimeError as e:
-        logger.critical(
-            "There was a problem with determining if `gitleaks` is installed: %s.", e
-        )
-        logger.info(
-            "Please install `gitleaks` and ensure it is available in your PATH."
-        )
-        logger.info(
-            "For installation instructions, visit: https://github.com/gitleaks/gitleaks"
-        )
-        return 1
-
-    try:
         _check_git()
-    except RuntimeError as e:
-        logger.critical(
-            "There was a problem with determining if `git` is installed: %s.", e
-        )
-        logger.info("Please install `git` and ensure it is available in your PATH.")
-        logger.info("Download `git` from: https://git-scm.com/downloads")
-        logger.info(
-            "For installation instructions, visit: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git"
-        )
-        return 1
-
-    try:
         _check_precommit()
-    except RuntimeError as e:
-        logger.critical(
-            "There was a problem with determining if `pre-commit` is installed: %s.", e
-        )
-        logger.info(
-            "Please install `pre-commit` and ensure it is available in your PATH."
-        )
-        logger.info(
-            "For installation instructions, visit: https://pre-commit.com/#install"
-        )
+    except RuntimeError:
         return 1
 
     logger.info("All pre-requisites are met.")

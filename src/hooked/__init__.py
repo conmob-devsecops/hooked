@@ -27,9 +27,15 @@
 
 from __future__ import annotations
 
+from packaging.version import Version
+
 try:
     from ._version import version as __version__
 except ImportError:
     __version__ = "0+dev"
+
 __pkg_name__ = "hooked"
 __upgrade_interval_seconds__ = 60 * 60 * 24 * 14  # 14 days
+__min_git_version__ = Version("2.50.0")
+__min_precommit_version__ = Version("4.3.0")
+__min_gitleaks_version__ = Version("8.28.0")

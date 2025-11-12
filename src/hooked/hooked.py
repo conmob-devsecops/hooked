@@ -102,8 +102,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             return self_upgrade(reset=args.reset, freeze=args.freeze, rev=args.rev)
 
         case "install":
-            from hooked.library.install import install
+            from hooked.library.install import check_pre_requisites, install
 
+            if check_pre_requisites() > 0:
+                return 1
             return install(args.rules[0], branch=args.branch)
 
         case "disable":
@@ -112,8 +114,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             return disable(args.prune)
 
         case "enable":
-            from hooked.library.install import enable
+            from hooked.library.install import check_pre_requisites, enable
 
+            if check_pre_requisites() > 0:
+                return 1
             return enable()
 
         case "run":
@@ -124,6 +128,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             from hooked.library.hooks.pre_commit import run_pre_commit_hook
 
             return run_pre_commit_hook(args.path)
+
+        case "check":
+            from hooked.library.install import check_pre_requisites
+
+            return check_pre_requisites()
 
     parser.print_help()
     return 0

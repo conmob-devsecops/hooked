@@ -22,9 +22,9 @@ frameworks may be added in the future.
 **Prerequisites**
 
 - **Python** ≥ 3.12 [Website](https://www.python.org/) | [Github](https://github.com/python/)
-- **Git** ≥ 2.9.0 [Website](https://git-scm.com/) | [Git](https://git.kernel.org/pub/scm/git/git.git)
+- **Git** ≥ 2.50.0 [Website](https://git-scm.com/) | [Git](https://git.kernel.org/pub/scm/git/git.git)
 - **Gitleaks** ≥ 8.28.0 [Website](https://gitleaks.io/) | [Github](https://github.com/gitleaks/gitleaks)
-- **pre-commit** ≥ 4.0.0 [Website](https://pre-commit.com/) | [Github](https://github.com/pre-commit/pre-commit)
+- **pre-commit** ≥ 4.3.0 [Website](https://pre-commit.com/) | [Github](https://github.com/pre-commit/pre-commit)
 
 Hooked itself will be installed via `pip`.
 
@@ -58,6 +58,9 @@ Congratulations 🎉 You now have hooked installed on your system!
 ## Usage
 
 ```bash
+# check prerequisites for hooked
+hooked check
+
 # update the installed rule set
 hooked update
 
