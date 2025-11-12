@@ -124,3 +124,10 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(1, retval)
         _check_gitleaks.assert_called_once()
         _check_git.assert_called_once()
+
+    def test_parse_version(self):
+        from packaging.version import Version
+
+        self.assertEqual(Version("1.2.3"), lib._parse_version("1.2.3"))
+        self.assertEqual(Version("0.0.0"), lib._parse_version("not.a.version"))
+        self.assertEqual(Version("2.51.1"), lib._parse_version("2.51.1.windows.1"))
