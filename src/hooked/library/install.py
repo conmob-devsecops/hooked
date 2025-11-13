@@ -37,7 +37,7 @@ from hooked import (
     __min_precommit_version__,
 )
 from hooked.library.cmd_util import CommandError, run_cmd
-from hooked.library.config import get_config_git_repo
+from hooked.library.config import install_config
 from hooked.library.files import (
     copy_hooked_files,
     get_base_dir,
@@ -164,20 +164,19 @@ def _check_precommit():
         ) from e
 
 
-def check_pre_requisites() -> int:
+def check_pre_requisites():
     try:
         _check_gitleaks()
         _check_git()
         _check_precommit()
     except RuntimeError as e:
         logger.critical(e)
-        return 1
+        raise
 
     logger.info("All pre-requisites are met.")
-    return 0
 
 
-def disable(prune: bool = False) -> int:
+def disable(prune: bool = False):
     logger.info("Disabling hooked...")
 
     git_unset_global_hook_path()
@@ -192,10 +191,8 @@ def disable(prune: bool = False) -> int:
 
     logger.info("hooked successfully disabled.")
 
-    return 0
 
-
-def enable() -> int:
+def enable():
     logger.info("Enabling hooked ...")
 
     git_set_global_hook_path(get_hooks_dir())
@@ -203,16 +200,11 @@ def enable() -> int:
 
     git_set_template_dir(get_template_dir())
     logger.debug("Git global template directory installed")
-
     logger.info("hooked successfully enabled.")
 
-    return 0
 
-
-def install(rules: str, branch: str) -> int:
+def install(rules: str, branch: str):
     logger.info("Installing hooked rules ...")
     copy_hooked_files()
-
-    get_config_git_repo(get_base_dir(), rules, branch)
-
-    return enable()
+    install_config(get_base_dir(), rules, branch)
+    enable()

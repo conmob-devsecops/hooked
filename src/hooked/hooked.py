@@ -27,24 +27,21 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import sys
+import traceback
+from argparse import Namespace
 from collections.abc import Sequence
-from datetime import datetime, timedelta
 
 from hooked import __upgrade_interval_seconds__, __version__
 from hooked.library.cli import cmd_parser
-from hooked.library.config import update_config_git_repo
-from hooked.library.files import copy_hooked_files, get_base_dir
+from hooked.library.config import update_config
+from hooked.library.files import get_base_dir
 from hooked.library.logger import logger, set_log_level
-from hooked.library.upgrade import (
-    get_last_upgrade_timestamp,
-    self_upgrade,
-    set_last_upgrade_timestamp,
-)
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def main(argv: Sequence[str] | None = None):
     parser = cmd_parser()
 
     args = parser.parse_args(argv)
@@ -62,76 +59,66 @@ def main(argv: Sequence[str] | None = None) -> int:
     logger.debug(f"Arguments: {args}")
     logger.debug(f"Log level set to {logger.level}")
 
+    try:
+        run(args)
+        return os.EX_OK
+    except:
+        if logger.level == logging.DEBUG:
+            sys.stderr.write("\033[31m")
+            sys.stderr.write(traceback.format_exc())
+            sys.stderr.write("\033[0m")
+            sys.stderr.flush()
+        return os.EX_SOFTWARE
+
+
+def run(args: Namespace):
     match args.cmd:
         case "version":
             sys.stdout.write(f"Hooked version: {__version__}\n")
             sys.stdout.flush()
-            return 0
 
         case "update":
-            logger.info("Updating hooked rule set ...")
             base_dir = get_base_dir()
-            update_config_git_repo(base_dir)
-            logger.info("Rule set updated.")
-            return 0
-
-        case "upgrade":
-            last_run = get_last_upgrade_timestamp()
-            now = datetime.now()
-            delta = timedelta(seconds=__upgrade_interval_seconds__)
-            if last_run and now - last_run < delta and not args.force:
-                logger.debug(
-                    "Last upgrade was %s, skipping upgrade (interval %s)",
-                    last_run,
-                    delta,
-                )
-                return 0
-            set_last_upgrade_timestamp()
-            logger.info("Upgrading hooked installation ...")
-            self_upgrade()
-            logger.info("Updating hooked rule set ...")
-            update_config_git_repo(get_base_dir())
-            copy_hooked_files()
-            return 0
+            update_config(base_dir)
 
         case "self-upgrade":
-            return self_upgrade(reset=args.reset, freeze=args.freeze, rev=args.rev)
+            from hooked.library.upgrade import self_upgrade
+
+            self_upgrade(reset=args.reset, freeze=args.freeze, rev=args.rev)
 
         case "install":
             from hooked.library.install import check_pre_requisites, install
 
-            if check_pre_requisites() > 0:
-                return 1
-            return install(args.rules[0], branch=args.branch)
+            check_pre_requisites()
+            install(args.rules[0], branch=args.branch)
 
         case "disable":
             from hooked.library.install import disable
 
-            return disable(args.prune)
+            disable(args.prune)
 
         case "enable":
             from hooked.library.install import check_pre_requisites, enable
 
-            if check_pre_requisites() > 0:
-                return 1
-            return enable()
+            check_pre_requisites()
+            enable()
 
         case "run":
             if getattr(args, "cmd_run", None) != "pre-commit":
                 logger.error("run can only be invoked with pre-commit")
-                return 1
+                raise NotImplementedError()
 
             from hooked.library.hooks.pre_commit import run_pre_commit_hook
 
-            return run_pre_commit_hook(args.path)
+            run_pre_commit_hook(args.path)
 
         case "check":
             from hooked.library.install import check_pre_requisites
 
-            return check_pre_requisites()
+            check_pre_requisites()
 
-    parser.print_help()
-    return 0
+        case _:
+            cmd_parser().print_help()
 
 
 if __name__ == "__main__":

@@ -60,10 +60,10 @@ class InstallInfo:
     is_editable: bool = False
 
 
-def _run_pip(*args: str) -> int:
+def _run_pip(*args: str):
     """Wrapper around pip subprocess call."""
     logger.debug("Running pip command: %s", args)
-    return run_cmd([sys.executable, "-m", "pip", *args]).returncode
+    run_cmd([sys.executable, "-m", "pip", *args])
 
 
 # thank god for PEP 610
@@ -154,7 +154,7 @@ def get_url_ref(url: str, ref: str) -> str:
     return spec_url
 
 
-def self_upgrade(reset=False, freeze=False, rev: str | None = None) -> int:
+def self_upgrade(reset=False, freeze=False, rev: str | None = None):
     """
     upgrade           : branch -> latest; sha -> same; semver tag -> latest semver
     upgrade --reset   : ignore current ref, use latest semver tag
@@ -221,12 +221,12 @@ def self_upgrade(reset=False, freeze=False, rev: str | None = None) -> int:
                 pass
 
     if target_ref is None:
-        return 1
+        raise ValueError("Could not determine target ref")
 
     spec = get_url_ref(info.url, target_ref)
     logger.debug("Specification: %s", spec)
     pip_args.append(spec)
-    return _run_pip(*pip_args)
+    _run_pip(*pip_args)
 
 
 def get_last_upgrade_timestamp() -> datetime | None:

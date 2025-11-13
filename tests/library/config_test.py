@@ -39,7 +39,7 @@ class TestConfig(unittest.TestCase):
         base_dir = "~/.config/hooked"
         repo = "https://git.example.com/hooked.git"
         branch = "main"
-        lib.get_config_git_repo(base_dir=base_dir, repo=repo, branch=branch)
+        lib.install_config(base_dir=base_dir, repo=repo, branch=branch)
 
         run_cmd.assert_has_calls(
             [
@@ -49,7 +49,7 @@ class TestConfig(unittest.TestCase):
         )
 
     @patch("hooked.library.config.run_cmd")
-    def test_get_config_error(self, run_cmd):
+    def test_install_config_error(self, run_cmd):
         run_cmd.side_effect = CommandError(CommandResult([], 1, "", ""))
 
         base_dir = "~/.config/hooked"
@@ -57,12 +57,14 @@ class TestConfig(unittest.TestCase):
         branch = "main"
 
         with self.assertRaises(CommandError):
-            lib.get_config_git_repo(base_dir=base_dir, repo=repo, branch=branch)
+            lib.install_config(base_dir=base_dir, repo=repo, branch=branch)
 
+    @patch("os.path.isdir")
     @patch("hooked.library.config.run_cmd")
-    def test_update_config(self, run_cmd):
+    def test_update_config(self, run_cmd, isdir):
+        isdir.return_value = True
         base_dir = "~/.config/hooked"
-        lib.update_config_git_repo(base_dir, force=False)
+        lib.update_config(base_dir, force=False)
 
         run_cmd.assert_has_calls(
             [
@@ -70,9 +72,10 @@ class TestConfig(unittest.TestCase):
                     [
                         "git",
                         "-C",
-                        "~/.config/hooked/config",
+                        f"{base_dir}/config",
                         "fetch",
                         "--prune",
+                        "--tags",
                         "origin",
                     ]
                 ),
@@ -80,7 +83,7 @@ class TestConfig(unittest.TestCase):
                     [
                         "git",
                         "-C",
-                        "~/.config/hooked/config",
+                        f"{base_dir}/config",
                         "-c",
                         "rebase.autoStash=true",
                         "pull",
@@ -93,10 +96,12 @@ class TestConfig(unittest.TestCase):
             ]
         )
 
+    @patch("os.path.isdir")
     @patch("hooked.library.config.run_cmd")
-    def test_update_config_force(self, run_cmd):
+    def test_update_config_force(self, run_cmd, isdir):
+        isdir.return_value = True
         base_dir = "~/.config/hooked"
-        lib.update_config_git_repo(base_dir=base_dir, force=True)
+        lib.update_config(base_dir=base_dir, force=True)
 
         run_cmd.assert_has_calls(
             [
@@ -104,7 +109,7 @@ class TestConfig(unittest.TestCase):
                     [
                         "git",
                         "-C",
-                        "~/.config/hooked/config",
+                        f"{base_dir}/config",
                         "fetch",
                         "--prune",
                         "--tags",
@@ -115,7 +120,7 @@ class TestConfig(unittest.TestCase):
                     [
                         "git",
                         "-C",
-                        "~/.config/hooked/config",
+                        f"{base_dir}/config",
                         "reset",
                         "--hard",
                         "origin/HEAD",

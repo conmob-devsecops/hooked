@@ -48,23 +48,22 @@ class InstallTests(unittest.TestCase):
 
     @patch("hooked.library.install.git_set_template_dir")
     @patch("hooked.library.install.git_set_global_hook_path")
-    @patch("hooked.library.install.get_config_git_repo")
+    @patch("hooked.library.install.install_config")
     @patch("hooked.library.install.copy_hooked_files")
     def test_install(
         self,
         copy_hooked_files,
-        get_config_git_repo,
+        install_config,
         git_set_global_hook_path,
         git_set_template_dir,
     ):
         rules = "git+https://git.example.com/hooked-rules.git"
         branch = "main"
 
-        retval = lib.install(rules=rules, branch=branch)
-        self.assertEqual(0, retval)
+        lib.install(rules=rules, branch=branch)
 
         copy_hooked_files.assert_called_once()
-        get_config_git_repo.assert_called_once_with(get_base_dir(), rules, branch)
+        install_config.assert_called_once_with(get_base_dir(), rules, branch)
         git_set_global_hook_path.assert_called_once_with(get_hooks_dir())
         git_set_template_dir.assert_called_once_with(get_template_dir())
 
@@ -77,8 +76,7 @@ class InstallTests(unittest.TestCase):
         git_unset_global_hook_path,
         git_unset_template_dir,
     ):
-        retval = lib.disable(True)
-        self.assertEqual(0, retval)
+        lib.disable(True)
 
         remove_base_dir.assert_called_once_with(get_base_dir())
         git_unset_global_hook_path.assert_called_once()
@@ -91,8 +89,7 @@ class InstallTests(unittest.TestCase):
         git_set_global_hook_path,
         git_set_template_dir,
     ):
-        retval = lib.enable()
-        self.assertEqual(0, retval)
+        lib.enable()
 
         git_set_global_hook_path.assert_called_once_with(get_hooks_dir())
         git_set_template_dir.assert_called_once_with(get_template_dir())
@@ -101,8 +98,7 @@ class InstallTests(unittest.TestCase):
     @patch("hooked.library.install._check_git")
     @patch("hooked.library.install._check_gitleaks")
     def test_check_pre_requisities(self, _check_gitleaks, _check_git, _check_precommit):
-        retval = lib.check_pre_requisites()
-        self.assertEqual(0, retval)
+        lib.check_pre_requisites()
         _check_gitleaks.assert_called_once()
         _check_git.assert_called_once()
         _check_precommit.assert_called_once()
@@ -111,8 +107,10 @@ class InstallTests(unittest.TestCase):
     @patch("hooked.library.install._check_gitleaks")
     def test_check_pre_requisities_error1(self, _check_gitleaks, _check_git):
         _check_gitleaks.side_effect = RuntimeError()
-        retval = lib.check_pre_requisites()
-        self.assertEqual(1, retval)
+
+        with self.assertRaises(RuntimeError):
+            lib.check_pre_requisites()
+
         _check_gitleaks.assert_called_once()
         _check_git.assert_not_called()
 
@@ -120,8 +118,10 @@ class InstallTests(unittest.TestCase):
     @patch("hooked.library.install._check_gitleaks")
     def test_check_pre_requisities_error2(self, _check_gitleaks, _check_git):
         _check_git.side_effect = RuntimeError()
-        retval = lib.check_pre_requisites()
-        self.assertEqual(1, retval)
+
+        with self.assertRaises(RuntimeError):
+            lib.check_pre_requisites()
+
         _check_gitleaks.assert_called_once()
         _check_git.assert_called_once()
 

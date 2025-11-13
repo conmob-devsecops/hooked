@@ -28,60 +28,89 @@
 from __future__ import annotations
 
 import os
+import shutil
 
 from .cmd_util import CommandError, run_cmd
 from .logger import logger
 
 
-def get_config_git_repo(base_dir: str, repo: str, branch: str) -> int:
+def install_config(base_dir: str, repo: str, branch: str):
     """Clones the configuration Git repository."""
     config_dir = os.path.join(base_dir, "config")
-    cmd_git_clone = ["git", "clone", repo, config_dir]
+
+    if os.path.isdir(config_dir):
+        logger.info("Existing config detected. Replacing it ...")
+        shutil.rmtree(config_dir)
+
     try:
-        run_cmd(cmd_git_clone)
+        run_cmd(["git", "clone", repo, config_dir])
     except CommandError as e:
-        if getattr(e, "result", None) and getattr(e.result, "returncode", None) == 128:
-            logger.warning("Git clone failed, repository already exists.")
-            return 0
+        logger.warning(f"Git clone failed: {e.result.stderr}")
         raise
 
-    cmd_git_checkout = ["git", "-C", config_dir, "checkout", branch]
-    logger.debug("Pre-commit config installed.")
-    return run_cmd(cmd_git_checkout).returncode
+    try:
+        run_cmd(["git", "-C", config_dir, "checkout", branch])
+    except CommandError as e:
+        logger.warning(f"Git checkout failed: {e.result.stderr}")
+        raise
+
+    logger.debug("Config installed successfully.")
 
 
-def update_config_git_repo(base_dir: str, force: bool = False):
+def update_config(base_dir: str, force: bool = False):
     """Updates the configuration Git repository."""
+    logger.info("Updating config ...")
     config_dir = os.path.join(base_dir, "config")
+    git_dir = os.path.join(config_dir, ".git")
+
+    if not os.path.isdir(config_dir):
+        logger.error("Config does not exist. Install a rule set first.")
+        raise
+
+    if not os.path.isdir(git_dir):
+        logger.error("Config is not updateable (not a git repository).")
+        raise
+
+    try:
+        run_cmd(
+            [
+                "git",
+                "-C",
+                config_dir,
+                "fetch",
+                "--prune",
+                "--tags",
+                "origin",
+            ]
+        )
+    except CommandError as e:
+        logger.error(f"Git fetch failed: {e.result.stderr}")
+        raise
 
     if force:
-        cmd_git_fetch = [
-            "git",
-            "-C",
-            config_dir,
-            "fetch",
-            "--prune",
-            "--tags",
-            "origin",
-        ]
-        run_cmd(cmd_git_fetch)
-
-        cmd_git_reset = ["git", "-C", config_dir, "reset", "--hard", "origin/HEAD"]
-        run_cmd(cmd_git_reset)
+        try:
+            run_cmd(["git", "-C", config_dir, "reset", "--hard", "origin/HEAD"])
+        except CommandError as e:
+            logger.error(f"Git reset failed: {e.result.stderr}")
+            raise
     else:
-        cmd_git_fetch = ["git", "-C", config_dir, "fetch", "--prune", "origin"]
-        run_cmd(cmd_git_fetch)
+        try:
+            run_cmd(
+                [
+                    "git",
+                    "-C",
+                    config_dir,
+                    "-c",
+                    "rebase.autoStash=true",
+                    "pull",
+                    "--no-rebase",
+                    "--no-edit",
+                    "--strategy-option",
+                    "ours",
+                ]
+            )
+        except CommandError as e:
+            logger.error(f"Git merge failed: {e.result.stderr}")
+            raise
 
-        cmd_git_merge = [
-            "git",
-            "-C",
-            config_dir,
-            "-c",
-            "rebase.autoStash=true",
-            "pull",
-            "--no-rebase",
-            "--no-edit",
-            "--strategy-option",
-            "ours",
-        ]
-        run_cmd(cmd_git_merge)
+    logger.info("Config updated successfully.")
