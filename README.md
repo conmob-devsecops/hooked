@@ -5,7 +5,7 @@
 [![GitHub Tag](https://img.shields.io/github/v/tag/conmob-devsecops/hooked?label=Version&color=e20074)](https://github.com/conmob-devsecops/hooked/releases)
 ![GitHub License](https://img.shields.io/github/license/conmob-devsecops/hooked)
 ![Python](https://img.shields.io/badge/Python-%E2%89%A5%203.12-%233776AB?logo=Python&logoColor=%23ffffff)
-![Git](https://img.shields.io/badge/Git-%E2%89%A5%202.50.0-%23F05032?logo=Git&logoColor=%23ffffff)
+![Git](https://img.shields.io/badge/Git-%E2%89%A5%202.30.0-%23F05032?logo=Git&logoColor=%23ffffff)
 [![pre-commit](https://img.shields.io/badge/pre--commit-%E2%89%A5%204.3.0-%23FAB040?logo=pre-commit&logoColor=ffffff)](https://pre-commit.com/)
 
 ## Hooked
@@ -22,7 +22,7 @@ frameworks may be added in the future.
 **Prerequisites**
 
 - **Python** ≥ 3.12 [Website](https://www.python.org/) | [Github](https://github.com/python/)
-- **Git** ≥ 2.50.0 [Website](https://git-scm.com/) | [Git](https://git.kernel.org/pub/scm/git/git.git)
+- **Git** ≥ 2.30.0 [Website](https://git-scm.com/) | [Git](https://git.kernel.org/pub/scm/git/git.git)
 - **Gitleaks** ≥ 8.28.0 [Website](https://gitleaks.io/) | [Github](https://github.com/gitleaks/gitleaks)
 - **pre-commit** ≥ 4.3.0 [Website](https://pre-commit.com/) | [Github](https://github.com/pre-commit/pre-commit)
 
