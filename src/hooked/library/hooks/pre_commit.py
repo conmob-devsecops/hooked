@@ -33,7 +33,7 @@ from pathlib import Path
 
 from hooked import __upgrade_interval_seconds__
 from hooked.library.cmd_util import CommandError, run_cmd, run_stream
-from hooked.library.config import update_config_git_repo
+from hooked.library.config import update_config
 from hooked.library.files import copy_hooked_files, get_base_dir
 from hooked.library.logger import logger
 from hooked.library.pre_commit_util import is_hook_error
@@ -96,7 +96,7 @@ def run_pre_commit_hook(cwd: str = "") -> int:
         self_upgrade()
 
         logger.debug("Updating hooked rules...")
-        update_config_git_repo(base_dir)
+        update_config(base_dir)
 
         logger.debug("Installing latest version of hooked git hooks...")
         copy_hooked_files()
