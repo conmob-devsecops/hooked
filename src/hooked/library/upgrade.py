@@ -38,11 +38,10 @@ from datetime import datetime
 from packaging.version import InvalidVersion, Version
 
 from hooked import __pkg_name__
-
-from .cmd_util import run_cmd
-from .files import get_base_dir
-from .git import git_get_last_branch_commit, git_get_tags
-from .logger import logger
+from hooked.library.cmd_util import run_cmd
+from hooked.library.files import get_base_dir
+from hooked.library.git import git_get_last_branch_commit, git_get_tags
+from hooked.library.logger import logger
 
 SEMVER_TAG_RE = re.compile(r"^v?\d+\.\d+\.\d+([.-].+)?$")
 SHA_RE = re.compile(r"^[0-9a-f]{7,40}$", re.IGNORECASE)

@@ -27,8 +27,8 @@
 
 from __future__ import annotations
 
-from .cmd_util import CommandError, run_cmd
-from .logger import logger
+from hooked.library.cmd_util import CommandError, run_cmd
+from hooked.library.logger import logger
 
 
 def git_set_global_hook_path(hooks_dir: str):

@@ -30,8 +30,8 @@ from __future__ import annotations
 import os
 import shutil
 
-from .cmd_util import CommandError, run_cmd
-from .logger import logger
+from hooked.library.cmd_util import CommandError, run_cmd
+from hooked.library.logger import logger
 
 
 def install_config(base_dir: str, repo: str, branch: str):
