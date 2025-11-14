@@ -31,6 +31,7 @@ import os
 import shutil
 
 from hooked.library.cmd_util import CommandError, run_cmd
+from hooked.library.git import is_git_repo
 from hooked.library.logger import logger
 
 
@@ -61,15 +62,14 @@ def update_config(base_dir: str, force: bool = False):
     """Updates the configuration Git repository."""
     logger.info("Updating config ...")
     config_dir = os.path.join(base_dir, "config")
-    git_dir = os.path.join(config_dir, ".git")
 
     if not os.path.isdir(config_dir):
         logger.error("Config does not exist. Install a rule set first.")
-        raise
+        raise FileNotFoundError()
 
-    if not os.path.isdir(git_dir):
+    if not is_git_repo(config_dir):
         logger.error("Config is not updateable (not a git repository).")
-        raise
+        raise RuntimeError()
 
     try:
         run_cmd(

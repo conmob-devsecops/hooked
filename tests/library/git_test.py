@@ -31,6 +31,7 @@ import unittest
 from unittest.mock import patch
 
 import hooked.library.git as lib
+from hooked.library.cmd_util import CommandError, CommandResult
 
 
 class GitTests(unittest.TestCase):
@@ -99,3 +100,25 @@ class GitTests(unittest.TestCase):
             ["git", "ls-remote", "--heads", url[4:], branch]
         )
         self.assertEqual(ref, sha)
+
+    @patch("hooked.library.git.run_cmd")
+    def test_is_git_repo(self, run_cmd):
+        run_cmd.return_value.stdout = "true\n"
+        dir = "/path/to/repo"
+        self.assertTrue(lib.is_git_repo(dir))
+        run_cmd.assert_called_once_with(
+            ["git", "rev-parse", "--is-inside-work-tree"], cwd=dir
+        )
+
+    @patch("hooked.library.git.run_cmd")
+    def test_is_not_a_git_repo(self, run_cmd):
+        run_cmd.side_effect = CommandError(
+            CommandResult(
+                cmd=[""],
+                returncode=127,
+                stdout=None,
+                stderr="fatal: not a git repository (or any of the parent directories): .git\n",
+            )
+        )
+        dir = "/not/a/repo"
+        self.assertFalse(lib.is_git_repo(dir))

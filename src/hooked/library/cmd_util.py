@@ -113,14 +113,23 @@ def run_cmd(
         )
     except FileNotFoundError as e:
         raise _handle_failure(
-            CommandResult(cmd, 127, None, str(e)), stderr=True, stdout=True
+            CommandResult(cmd=cmd, returncode=127, stdout=None, stderr=str(e)),
+            stderr=True,
+            stdout=True,
         )
     except sp.TimeoutExpired as e:
         rc = -signal.SIGALRM
-        raise _handle_failure(CommandResult(cmd, rc, str(e.stdout), str(e.stderr)))
+        raise _handle_failure(
+            CommandResult(
+                cmd=cmd, returncode=rc, stdout=str(e.stdout), stderr=str(e.stderr)
+            )
+        )
 
     result = CommandResult(
-        cmd, completed.returncode, completed.stdout.strip(), completed.stderr.strip()
+        cmd=cmd,
+        returncode=completed.returncode,
+        stdout=completed.stdout.strip(),
+        stderr=completed.stderr.strip(),
     )
     if not result.ok:
         raise _handle_failure(result)
@@ -150,7 +159,9 @@ def run_stream(
             bufsize=1,  # line-buffered
         )
     except FileNotFoundError as e:
-        raise _handle_failure(CommandResult(cmd, 127, None, str(e)))
+        raise _handle_failure(
+            CommandResult(cmd=cmd, returncode=127, stdout=None, stderr=str(e))
+        )
 
     out_buf: list[str] = []
     err_buf: list[str] = []
@@ -178,10 +189,10 @@ def run_stream(
     t_err.join()
 
     result = CommandResult(
-        cmd,
-        rc,
-        "".join(out_buf) if out_buf else None,
-        "".join(err_buf) if err_buf else None,
+        cmd=cmd,
+        returncode=rc,
+        stdout="".join(out_buf) if out_buf else None,
+        stderr="".join(err_buf) if err_buf else None,
     )
     if not result.ok:
         raise _handle_failure(result)

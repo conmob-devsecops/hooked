@@ -111,3 +111,13 @@ def git_get_last_branch_commit(url: str, branch: str) -> str | None:
         if ref == f"refs/heads/{branch}":
             return sha
     return None
+
+
+def is_git_repo(dir: str) -> bool:
+    try:
+        result = run_cmd(["git", "rev-parse", "--is-inside-work-tree"], cwd=dir)
+        return "true" in str(result.stdout)
+    except CommandError as e:
+        if "not a git repository" in str(e.result.stderr):
+            return False
+        raise
