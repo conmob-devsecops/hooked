@@ -104,10 +104,6 @@ def run(args: Namespace):
             enable()
 
         case "run":
-            if getattr(args, "cmd_run", None) != "pre-commit":
-                logger.error("run can only be invoked with pre-commit")
-                raise NotImplementedError()
-
             from hooked.library.hooks.pre_commit import run_pre_commit_hook
 
             run_pre_commit_hook(args.path)
