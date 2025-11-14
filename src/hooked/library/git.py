@@ -27,43 +27,48 @@
 
 from __future__ import annotations
 
-from .cmd_util import CommandError, run_cmd
-from .logger import logger
+from hooked.library.cmd_util import CommandError, run_cmd
+from hooked.library.logger import logger
 
 
-def git_set_global_hook_path(hooks_dir: str) -> int:
+def git_set_global_hook_path(hooks_dir: str):
     """Set the global git hooks path to the specified directory."""
-    cmd = ["git", "config", "--global", "core.hooksPath", hooks_dir]
-    return run_cmd(cmd).returncode
-
-
-def git_unset_global_hook_path() -> int:
-    """Unset the global git hooks path."""
-    cmd = ["git", "config", "--global", "--unset", "core.hooksPath"]
     try:
-        return run_cmd(cmd).returncode
+        run_cmd(["git", "config", "--global", "core.hooksPath", hooks_dir])
     except CommandError as e:
-        if getattr(e, "result", None) and getattr(e.result, "returncode", None) == 5:
-            logger.warning("Git global hooksPath not set, nothing to unset.")
-            return 0
+        logger.error(f"Git config failed: {e.result.stderr}")
         raise
 
 
-def git_set_template_dir(template_dir: str) -> int:
+def git_unset_global_hook_path():
+    """Unset the global git hooks path."""
+    try:
+        run_cmd(["git", "config", "--global", "--unset", "core.hooksPath"])
+    except CommandError as e:
+        if getattr(e, "result", None) and getattr(e.result, "returncode", None) == 5:
+            logger.warning("Git global hooksPath not set, nothing to unset.")
+            return
+        raise
+
+
+def git_set_template_dir(template_dir: str):
     """Set the global git template directory to the specified directory."""
-    cmd = ["git", "config", "--global", "init.templateDir", template_dir]
-    return run_cmd(cmd).returncode
+    try:
+        run_cmd(["git", "config", "--global", "init.templateDir", template_dir])
+    except CommandError as e:
+        logger.error(f"Git config failed: {e.result.stderr}")
+        raise
 
 
-def git_unset_template_dir() -> int:
+def git_unset_template_dir():
     """Unset the global git template directory."""
     cmd = ["git", "config", "--global", "--unset", "init.templateDir"]
     try:
-        return run_cmd(cmd).returncode
+        run_cmd(["git", "config", "--global", "--unset", "init.templateDir"])
     except CommandError as e:
         if getattr(e, "result", None) and getattr(e.result, "returncode", None) == 5:
             logger.warning("Git global templateDir not set, nothing to unset.")
-            return 0
+            return
         raise
 
 
@@ -106,3 +111,13 @@ def git_get_last_branch_commit(url: str, branch: str) -> str | None:
         if ref == f"refs/heads/{branch}":
             return sha
     return None
+
+
+def is_git_repo(dir: str) -> bool:
+    try:
+        result = run_cmd(["git", "rev-parse", "--is-inside-work-tree"], cwd=dir)
+        return "true" in str(result.stdout)
+    except CommandError as e:
+        if "not a git repository" in str(e.result.stderr):
+            return False
+        raise

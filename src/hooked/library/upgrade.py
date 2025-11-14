@@ -38,11 +38,10 @@ from datetime import datetime
 from packaging.version import InvalidVersion, Version
 
 from hooked import __pkg_name__
-
-from .cmd_util import run_cmd
-from .files import get_base_dir
-from .git import git_get_last_branch_commit, git_get_tags
-from .logger import logger
+from hooked.library.cmd_util import run_cmd
+from hooked.library.files import get_base_dir
+from hooked.library.git import git_get_last_branch_commit, git_get_tags
+from hooked.library.logger import logger
 
 SEMVER_TAG_RE = re.compile(r"^v?\d+\.\d+\.\d+([.-].+)?$")
 SHA_RE = re.compile(r"^[0-9a-f]{7,40}$", re.IGNORECASE)
@@ -60,10 +59,10 @@ class InstallInfo:
     is_editable: bool = False
 
 
-def _run_pip(*args: str) -> int:
+def _run_pip(*args: str):
     """Wrapper around pip subprocess call."""
     logger.debug("Running pip command: %s", args)
-    return run_cmd([sys.executable, "-m", "pip", *args]).returncode
+    run_cmd([sys.executable, "-m", "pip", *args])
 
 
 # thank god for PEP 610
@@ -154,7 +153,7 @@ def get_url_ref(url: str, ref: str) -> str:
     return spec_url
 
 
-def self_upgrade(reset=False, freeze=False, rev: str | None = None) -> int:
+def self_upgrade(reset=False, freeze=False, rev: str | None = None):
     """
     upgrade           : branch -> latest; sha -> same; semver tag -> latest semver
     upgrade --reset   : ignore current ref, use latest semver tag
@@ -221,12 +220,12 @@ def self_upgrade(reset=False, freeze=False, rev: str | None = None) -> int:
                 pass
 
     if target_ref is None:
-        return 1
+        raise ValueError("Could not determine target ref")
 
     spec = get_url_ref(info.url, target_ref)
     logger.debug("Specification: %s", spec)
     pip_args.append(spec)
-    return _run_pip(*pip_args)
+    _run_pip(*pip_args)
 
 
 def get_last_upgrade_timestamp() -> datetime | None:

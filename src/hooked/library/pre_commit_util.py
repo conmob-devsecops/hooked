@@ -27,7 +27,7 @@
 
 from __future__ import annotations
 
-from .cmd_util import CommandError
+from hooked.library.cmd_util import CommandError
 
 
 def is_hook_error(err: CommandError) -> bool:
