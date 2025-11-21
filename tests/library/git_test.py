@@ -31,7 +31,7 @@ import unittest
 from unittest.mock import patch
 
 import hooked.library.git as lib
-from hooked.library.cmd_util import CommandError, CommandResult
+from hooked.library.cmd import CommandError, CommandResult
 
 
 class GitTests(unittest.TestCase):
@@ -55,7 +55,7 @@ class GitTests(unittest.TestCase):
         directory = "bar"
         lib.git_set_template_dir(directory)
         run_cmd.assert_called_once_with(
-            ["git", "config", "--global", "init.templateDir", directory]
+            ["git", "config", "--global", "init.templatedir", directory]
         )
 
     @patch("hooked.library.git.run_cmd")
@@ -122,3 +122,146 @@ class GitTests(unittest.TestCase):
         )
         dir = "/not/a/repo"
         self.assertFalse(lib.is_git_repo(dir))
+
+    @patch("hooked.library.git.run_cmd")
+    def git_clone_test(self, run_cmd):
+        repo = "https://example.git.com/repo.git"
+        dest = "/dev/null"
+
+        lib.git_clone_repo(repo=repo, dest=dest)
+
+        run_cmd.assert_called_once_with(["git", "clone", repo, dest])
+
+    @patch("hooked.library.git.run_cmd")
+    def test_git_clone_error(self, run_cmd):
+        repo = "https://example.git.com/repo.git"
+        dest = "/dev/null"
+
+        run_cmd.side_effect = CommandError(
+            CommandResult(
+                cmd=[""], returncode=127, stdout=None, stderr="oh oh could not clone"
+            )
+        )
+
+        with self.assertRaises(CommandError):
+            lib.git_clone_repo(repo=repo, dest=dest)
+
+    @patch("hooked.library.git.run_cmd")
+    def test_git_checkout(self, run_cmd):
+        repo = "/path/to/repo"
+        branch = "main"
+
+        lib.git_checkout_branch(repo=repo, branch=branch)
+
+        run_cmd.assert_called_once_with(["git", "-C", repo, "checkout", branch])
+
+    @patch("hooked.library.git.run_cmd")
+    def test_git_checkout_error(self, run_cmd):
+        repo = "/not/a/path"
+        branch = "main"
+
+        run_cmd.side_effect = CommandError(
+            CommandResult(
+                cmd=[""], returncode=127, stdout=None, stderr="oh oh could not clone"
+            )
+        )
+
+        with self.assertRaises(CommandError):
+            lib.git_checkout_branch(repo=repo, branch=branch)
+
+    @patch("hooked.library.git.run_cmd")
+    def test_git_fetch_origin(self, run_cmd):
+        repo = "/path/to/repo"
+
+        lib.git_fetch_origin(repo=repo)
+
+        run_cmd.assert_called_once_with(
+            [
+                "git",
+                "-C",
+                repo,
+                "fetch",
+                "--prune",
+                "--tags",
+                "origin",
+            ]
+        )
+
+    @patch("hooked.library.git.run_cmd")
+    def test_git_fetch_error(self, run_cmd):
+        repo = "/not/a/path"
+
+        run_cmd.side_effect = CommandError(
+            CommandResult(
+                cmd=[""],
+                returncode=127,
+                stdout=None,
+                stderr="oh oh could not fetch origin",
+            )
+        )
+
+        with self.assertRaises(CommandError):
+            lib.git_fetch_origin(repo=repo)
+
+    @patch("hooked.library.git.run_cmd")
+    def test_git_resert_hard(self, run_cmd):
+        repo = "/path/to/repo"
+
+        lib.git_reset_hard_to_origin(repo=repo)
+
+        run_cmd.assert_called_once_with(
+            ["git", "-C", repo, "reset", "--hard", "origin/HEAD"]
+        )
+
+    @patch("hooked.library.git.run_cmd")
+    def git_reset_hard_error_test(self, run_cmd):
+        repo = "/not/a/repo"
+
+        run_cmd.side_effect = CommandError(
+            CommandResult(
+                cmd=[""],
+                returncode=127,
+                stdout=None,
+                stderr="oh oh could not reset hard to orgin",
+            )
+        )
+
+        with self.assertRaises(CommandError):
+            lib.git_reset_hard_to_origin(repo=repo)
+
+    @patch("hooked.library.git.run_cmd")
+    def git_try_merge_test(self, run_cmd):
+        repo = "/path/to/repo"
+
+        lib.git_try_merge(repo=repo)
+
+        run_cmd.assert_called_once_with(
+            [
+                "git",
+                "-C",
+                repo,
+                "-c",
+                "rebase.autoStash=true",
+                "pull",
+                "--no-rebase",
+                "--no-edit",
+                "--strategy-option",
+                "ours",
+            ]
+        )
+
+    @patch("hooked.library.git.run_cmd")
+    def test_git_try_merge_error(self, run_cmd):
+        repo = "/not/a/repo"
+
+        run_cmd.side_effect = CommandError(
+            CommandResult(
+                cmd=[""],
+                returncode=127,
+                stdout=None,
+                stderr="oh oh could not try merge repo",
+            )
+        )
+
+        with self.assertRaises(CommandError):
+            lib.git_try_merge(repo=repo)

@@ -37,8 +37,8 @@ from datetime import datetime
 
 from packaging.version import InvalidVersion, Version
 
-from hooked import __pkg_name__
-from hooked.library.cmd_util import run_cmd
+from hooked.__meta__ import __pkg_name__
+from hooked.library.cmd import run_cmd
 from hooked.library.files import get_base_dir
 from hooked.library.git import git_get_last_branch_commit, git_get_tags
 from hooked.library.logger import logger
@@ -228,7 +228,7 @@ def self_upgrade(reset=False, freeze=False, rev: str | None = None):
     _run_pip(*pip_args)
 
 
-def get_last_upgrade_timestamp() -> datetime | None:
+def get_last_upgrade_timestamp() -> datetime:
     """Reads last upgrade timestamp from hooked config directory"""
 
     ts_file = os.path.join(get_base_dir(), "last_upgrade.txt")
@@ -239,7 +239,7 @@ def get_last_upgrade_timestamp() -> datetime | None:
             ts = datetime.fromisoformat(ts)
             return ts
     except FileNotFoundError:
-        return None
+        return datetime(1970, 1, 1)
 
 
 def set_last_upgrade_timestamp() -> None:
