@@ -27,7 +27,4 @@
 
 from __future__ import annotations
 
-from hooked.hooked import main
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+from hooked.cli import cli as main
