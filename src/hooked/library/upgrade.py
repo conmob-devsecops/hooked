@@ -228,7 +228,7 @@ def self_upgrade(reset=False, freeze=False, rev: str | None = None):
     _run_pip(*pip_args)
 
 
-def get_last_upgrade_timestamp() -> datetime:
+def get_last_upgrade_timestamp() -> datetime | None:
     """Reads last upgrade timestamp from hooked config directory"""
 
     ts_file = os.path.join(get_base_dir(), "last_upgrade.txt")
@@ -239,7 +239,7 @@ def get_last_upgrade_timestamp() -> datetime:
             ts = datetime.fromisoformat(ts)
             return ts
     except FileNotFoundError:
-        return datetime(1970, 1, 1)
+        return None
 
 
 def set_last_upgrade_timestamp() -> None:

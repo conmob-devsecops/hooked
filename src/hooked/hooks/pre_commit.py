@@ -76,17 +76,21 @@ def _normalize_cwd(cwd: str) -> str:
 
 def _check_autoupdate() -> bool:
     last_run = upgrade.get_last_upgrade_timestamp()
-    logger.debug(f"Last pre-commit run at {last_run}")
+    if not last_run:
+        logger.debug("Never run autoupdate")
+        return True
+
+    logger.debug(f"Last autoupdate run at {last_run}")
 
     now = datetime.now()
     delta = timedelta(seconds=__upgrade_interval_seconds__)
 
     if _flag_is_set("HOOKED_SKIP"):
-        logger.debug("Pre-commit upgrade skipped due environment setting.")
+        logger.debug("autoupdate skipped due environment setting.")
         return False
 
     if last_run and now - last_run < delta:
-        logger.debug("Pre-commit upgrade skipped due to upgrade interval.")
+        logger.debug("autoupdate skipped due to upgrade interval.")
         return False
 
     return True
@@ -109,9 +113,6 @@ def _run_internal_precommit(cwd: str) -> None:
 
 
 def _do_autoupdate() -> None:
-    last_run = upgrade.get_last_upgrade_timestamp()
-    logger.debug(f"Last pre-commit run at {last_run}")
-
     logger.info("Running hooked self-upgrade...")
     upgrade.self_upgrade()
 
