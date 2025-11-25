@@ -35,7 +35,7 @@ from hooked.library import install
 
 @cli.command("install")
 @click.argument("url")
-@click.option("-b", "--branch", type=str, help="")
+@click.option("-b", "--branch", type=str, default="main")
 def install_rules(url: str, branch: str) -> None:
     """
     Install hooked into your system

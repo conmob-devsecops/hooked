@@ -45,9 +45,12 @@ from hooked.library import upgrade
     help="Freezes current installation to its branch/tag/sha (stops tracking branch)",
 )
 @click.argument(
-    "rev", type=str
-)  # , help="Switch to given branch/tag/sha and install from there"
-def self_upgrade(reset: bool, freeze: bool, rev: str) -> None:
+    "rev",
+    type=str,
+    required=False,
+    default=None,
+)
+def self_upgrade(reset: bool, freeze: bool, rev: str | None = None) -> None:
     """
     Upgrade hooked installation
     """

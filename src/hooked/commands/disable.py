@@ -41,4 +41,3 @@ def disable(prune: bool) -> None:
     Disable hooked on your system
     """
     install.disable(prune=prune)
-    pass
