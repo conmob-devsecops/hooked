@@ -37,6 +37,6 @@ from hooked.commands.run.__cli__ import cli
 @click.argument("path")
 def run_pre_commit(path: str) -> None:
     """
-    run the pre-commit hook actions"
+    run the pre-commit hook actions
     """
     hooks.run_pre_commit(cwd=path)

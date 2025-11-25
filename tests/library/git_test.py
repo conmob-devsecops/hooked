@@ -222,7 +222,7 @@ class GitTests(unittest.TestCase):
                 cmd=[""],
                 returncode=127,
                 stdout=None,
-                stderr="oh oh could not reset hard to orgin",
+                stderr="oh oh could not reset hard to origin",
             )
         )
 

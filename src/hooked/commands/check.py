@@ -34,6 +34,6 @@ from hooked.library import install
 @cli.command("check")
 def check():
     """
-    Check software prerequistites of hooked
+    Check software prerequisites of hooked
     """
     install.check_pre_requisites()

@@ -161,7 +161,7 @@ def git_reset_hard_to_origin(repo: str) -> None:
 
 
 def git_try_merge(repo: str) -> None:
-    """Try to merge merge a given repository with the latest fetched changes"""
+    """Try to merge a given repository with the latest fetched changes"""
     try:
         run_cmd(
             [
