@@ -27,7 +27,7 @@
 
 from __future__ import annotations
 
-from hooked.cli import cli
+from hooked.hooked import cli
 from hooked.library import install
 
 

@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import click
 
-from hooked.cli import cli
+from hooked.hooked import cli
 from hooked.library import upgrade
 
 

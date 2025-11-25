@@ -27,7 +27,7 @@
 
 from __future__ import annotations
 
-from hooked.cli import cli as hooked_cli
+from hooked.hooked import cli as hooked_cli
 
 
 @hooked_cli.group("run")

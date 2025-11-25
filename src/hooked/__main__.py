@@ -27,4 +27,4 @@
 
 from __future__ import annotations
 
-from hooked.cli import cli as main
+from hooked.hooked import cli as main
