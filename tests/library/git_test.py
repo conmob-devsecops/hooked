@@ -55,7 +55,7 @@ class GitTests(unittest.TestCase):
         directory = "bar"
         lib.git_set_template_dir(directory)
         run_cmd.assert_called_once_with(
-            ["git", "config", "--global", "init.templatedir", directory]
+            ["git", "config", "--global", "init.templateDir", directory]
         )
 
     @patch("hooked.library.git.run_cmd")

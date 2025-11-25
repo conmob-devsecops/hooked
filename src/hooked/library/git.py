@@ -56,9 +56,9 @@ def git_unset_global_hook_path():
 def git_set_template_dir(template_dir: str):
     """Set the global git template directory to the specified directory."""
     try:
-        run_cmd(["git", "config", "--global", "init.templatedir", template_dir])
+        run_cmd(["git", "config", "--global", "init.templateDir", template_dir])
     except CommandError as e:
-        logger.error(f"git config failed: {e.result.stderr}")
+        logger.error(f"Git config failed: {e.result.stderr}")
         raise
 
 
