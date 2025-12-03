@@ -31,12 +31,12 @@ import re
 
 from packaging.version import InvalidVersion, Version
 
-from hooked import (
+from hooked.__meta__ import (
     __min_git_version__,
     __min_gitleaks_version__,
     __min_precommit_version__,
 )
-from hooked.library.cmd_util import CommandError, run_cmd
+from hooked.library.cmd import CommandError, run_cmd
 from hooked.library.config import install_config
 from hooked.library.files import (
     copy_hooked_files,
@@ -206,5 +206,5 @@ def enable():
 def install(rules: str, branch: str):
     logger.info("Installing hooked rules ...")
     copy_hooked_files()
-    install_config(get_base_dir(), rules, branch)
+    install_config(repo=rules, branch=branch)
     enable()

@@ -37,8 +37,8 @@ from datetime import datetime
 
 from packaging.version import InvalidVersion, Version
 
-from hooked import __pkg_name__
-from hooked.library.cmd_util import run_cmd
+from hooked.__meta__ import __pkg_name__
+from hooked.library.cmd import run_cmd
 from hooked.library.files import get_base_dir
 from hooked.library.git import git_get_last_branch_commit, git_get_tags
 from hooked.library.logger import logger

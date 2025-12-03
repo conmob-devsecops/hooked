@@ -61,32 +61,30 @@ def get_template_dir() -> str:
     return os.path.join(base_dir, "git_template")
 
 
-def _create_base_dir():
+def _create_base_dir() -> None:
     """Create the base directory if it doesn't exist."""
     base_dir = get_base_dir()
     os.makedirs(base_dir, exist_ok=True)
     logger.debug(f"Base directory created at {base_dir}")
 
 
-def _create_hooks_dir():
+def _create_hooks_dir() -> None:
     """Create the git_hooks directory if it doesn't exist."""
     base_dir = get_base_dir()
     hooks_dir = os.path.join(base_dir, "git_hooks")
     os.makedirs(hooks_dir, exist_ok=True)
     logger.debug(f"Hooks directory created at {hooks_dir}")
-    return hooks_dir
 
 
-def _create_git_template_dir():
+def _create_git_template_dir() -> None:
     """Create the git_template directory if it doesn't exist."""
     base_dir = get_base_dir()
     git_template_dir = os.path.join(base_dir, "git_template")
     os.makedirs(git_template_dir, exist_ok=True)
     logger.debug(f"Git templates directory created at {git_template_dir}")
-    return git_template_dir
 
 
-def _copy_git_hooks(git_hooks_src_path: str, git_hooks_dst_dir: str):
+def _copy_git_hooks(git_hooks_src_path: str, git_hooks_dst_dir: str) -> None:
     """Copy git hook scripts to the git_hooks directory."""
     git_hooks_src_dir = files(git_hooks_src_path)
     with as_file(git_hooks_src_dir) as git_hooks_src:
@@ -102,17 +100,26 @@ def _copy_git_hooks(git_hooks_src_path: str, git_hooks_dst_dir: str):
     logger.debug("Git hooks copied.")
 
 
-def copy_hooked_files():
+def copy_hooked_files() -> None:
     _create_base_dir()
     _create_git_template_dir()
     _create_hooks_dir()
+
     _copy_git_hooks("hooked.data.git_hooks", get_hooks_dir())
     logger.debug("Git global hooks copied.")
+
     _copy_git_hooks("hooked.data.git_template", get_template_dir())
     logger.debug("Git template copied.")
 
 
-def remove_base_dir(base_dir: str):
+def remove_base_dir(base_dir: str) -> None:
     """Remove the base directory and all its contents."""
     if os.path.exists(base_dir):
         shutil.rmtree(base_dir)
+
+
+def remove_config_dir() -> None:
+    """Remove the config dir and all its contents"""
+    config_dir = get_config_dir()
+    if os.path.exists(config_dir):
+        shutil.rmtree(config_dir)

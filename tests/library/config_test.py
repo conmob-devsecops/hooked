@@ -24,136 +24,75 @@
 #  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 from __future__ import annotations
 
 import unittest
-from unittest.mock import call, patch
+from unittest.mock import patch
 
 import hooked.library.config as lib
-from hooked.library.cmd_util import CommandError, CommandResult
-from hooked.library.git import is_git_repo
+from hooked.library import files
 
 
 class TestConfig(unittest.TestCase):
-    @patch("hooked.library.config.run_cmd")
-    def test_get_config(self, run_cmd):
-        base_dir = "~/.config/hooked"
-        repo = "https://git.example.com/hooked.git"
-        branch = "main"
-        lib.install_config(base_dir=base_dir, repo=repo, branch=branch)
-
-        run_cmd.assert_has_calls(
-            [
-                call(["git", "clone", repo, "~/.config/hooked/config"]),
-                call(["git", "-C", "~/.config/hooked/config", "checkout", branch]),
-            ]
-        )
-
-    @patch("hooked.library.config.run_cmd")
-    def test_install_config_error(self, run_cmd):
-        run_cmd.side_effect = CommandError(CommandResult([], 1, "", ""))
-
-        base_dir = "~/.config/hooked"
+    @patch("os.path.isdir")
+    @patch("hooked.library.files.remove_config_dir")
+    @patch("hooked.library.config.git")
+    def test_install_config_replace(self, git, remove_config_dir, isdir):
+        isdir.return_value = True
+        config_dir = files.get_config_dir()
         repo = "https://git.example.com/hooked.git"
         branch = "main"
 
-        with self.assertRaises(CommandError):
-            lib.install_config(base_dir=base_dir, repo=repo, branch=branch)
+        lib.install_config(repo=repo, branch=branch)
+
+        isdir.assert_called_once_with(config_dir)
+        remove_config_dir.assert_called_once()
+
+        git.git_clone_repo.assert_called_once_with(repo=repo, dest=config_dir)
+        git.git_checkout_branch.assert_called_once_with(repo=config_dir, branch=branch)
 
     @patch("os.path.isdir")
-    @patch("hooked.library.config.is_git_repo")
-    @patch("hooked.library.config.run_cmd")
-    def test_update_config(self, run_cmd, is_git_repo, isdir):
+    @patch("hooked.library.config.git")
+    def test_update_config(
+        self,
+        git,
+        isdir,
+    ):
         isdir.return_value = True
-        is_git_repo.return_value = True
-        base_dir = "~/.config/hooked"
-        lib.update_config(base_dir, force=False)
+        git.is_git_repo.return_value = True
+        config_dir = files.get_config_dir()
 
-        run_cmd.assert_has_calls(
-            [
-                call(
-                    [
-                        "git",
-                        "-C",
-                        f"{base_dir}/config",
-                        "fetch",
-                        "--prune",
-                        "--tags",
-                        "origin",
-                    ]
-                ),
-                call(
-                    [
-                        "git",
-                        "-C",
-                        f"{base_dir}/config",
-                        "-c",
-                        "rebase.autoStash=true",
-                        "pull",
-                        "--no-rebase",
-                        "--no-edit",
-                        "--strategy-option",
-                        "ours",
-                    ]
-                ),
-            ]
-        )
+        lib.update_config(force=False)
+        git.git_fetch_origin.assert_called_once_with(repo=config_dir)
+        git.git_try_merge.assert_called_once_with(repo=config_dir)
+        self.assertFalse(git.git_reset_hard_to_origin.called)
+
+        lib.update_config(force=True)
+        git.git_reset_hard_to_origin.assert_called_once_with(repo=config_dir)
 
     @patch("os.path.isdir")
-    @patch("hooked.library.config.is_git_repo")
-    @patch("hooked.library.config.run_cmd")
-    def test_update_config_force(self, run_cmd, is_git_repo, isdir):
-        isdir.return_value = True
-        is_git_repo.return_value = True
-        base_dir = "~/.config/hooked"
-        lib.update_config(base_dir=base_dir, force=True)
-
-        run_cmd.assert_has_calls(
-            [
-                call(
-                    [
-                        "git",
-                        "-C",
-                        f"{base_dir}/config",
-                        "fetch",
-                        "--prune",
-                        "--tags",
-                        "origin",
-                    ]
-                ),
-                call(
-                    [
-                        "git",
-                        "-C",
-                        f"{base_dir}/config",
-                        "reset",
-                        "--hard",
-                        "origin/HEAD",
-                    ]
-                ),
-            ]
-        )
-
-    @patch("os.path.isdir")
-    @patch("hooked.library.config.run_cmd")
-    def test_update_config_not_a_dir(self, run_cmd, isdir):
+    @patch("hooked.library.config.git")
+    def test_update_config_not_a_dir(self, git, isdir):
         isdir.return_value = False
-        base_dir = "~/.config/does_not_exist"
 
         with self.assertRaises(FileNotFoundError):
-            lib.update_config(base_dir=base_dir)
+            lib.update_config()
 
-        self.assertFalse(run_cmd.called)
+        self.assertFalse(git.is_git_repo.called)
+        self.assertFalse(git.git_fetch_origin.called)
+        self.assertFalse(git.git_reset_hard_to_origin.called)
+        self.assertFalse(git.git_try_merge.called)
 
     @patch("os.path.isdir")
-    @patch("hooked.library.config.is_git_repo")
-    @patch("hooked.library.config.run_cmd")
-    def test_update_config_not_a_repo(self, run_cmd, is_git_repo, isdir):
+    @patch("hooked.library.config.git")
+    def test_update_config_not_a_repo(self, git, isdir):
         isdir.return_value = True
-        is_git_repo.return_value = False
-        base_dir = "~/.config/does_not_exist"
+        git.is_git_repo.return_value = False
 
         with self.assertRaises(RuntimeError):
-            lib.update_config(base_dir=base_dir)
+            lib.update_config()
 
-        self.assertFalse(run_cmd.called)
+        self.assertFalse(git.git_fetch_origin.called)
+        self.assertFalse(git.git_reset_hard_to_origin.called)
+        self.assertFalse(git.git_try_merge.called)

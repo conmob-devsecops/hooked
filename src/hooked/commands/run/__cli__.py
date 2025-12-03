@@ -27,29 +27,12 @@
 
 from __future__ import annotations
 
-import click
-
-from hooked.library import logger
+from hooked.hooked import cli as hooked_cli
 
 
-@click.group()
-@click.option("-v", "--verbose", is_flag=True, help="Enables verbose mode")
-def cli(verbose):
-    """ConMob Hooked"""
-
-    # logging
-    level = "DEBUG" if verbose else "WARNING"
-    logger.set_log_level(level)
-
-
-@cli.command()
-def version():
+@hooked_cli.group("run")
+def cli():
     """
-    Prints the version
+    (Internal) run hooks
     """
-    try:
-        from ._version import version as __version__
-    except ImportError:
-        __version__ = "0+dev"
-
-    click.echo(f"Hooked version: {__version__}")
+    pass

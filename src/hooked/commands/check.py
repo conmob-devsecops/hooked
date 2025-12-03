@@ -27,29 +27,13 @@
 
 from __future__ import annotations
 
-import click
-
-from hooked.library import logger
-
-
-@click.group()
-@click.option("-v", "--verbose", is_flag=True, help="Enables verbose mode")
-def cli(verbose):
-    """ConMob Hooked"""
-
-    # logging
-    level = "DEBUG" if verbose else "WARNING"
-    logger.set_log_level(level)
+from hooked.hooked import cli
+from hooked.library import install
 
 
-@cli.command()
-def version():
+@cli.command("check")
+def check():
     """
-    Prints the version
+    Check software prerequisites of hooked
     """
-    try:
-        from ._version import version as __version__
-    except ImportError:
-        __version__ = "0+dev"
-
-    click.echo(f"Hooked version: {__version__}")
+    install.check_pre_requisites()

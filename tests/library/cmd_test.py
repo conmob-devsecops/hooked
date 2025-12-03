@@ -30,7 +30,7 @@ import subprocess
 import unittest
 from unittest.mock import patch
 
-import hooked.library.cmd_util as lib
+import hooked.library.cmd as lib
 
 
 class CmdUtilTests(unittest.TestCase):
@@ -39,12 +39,12 @@ class CmdUtilTests(unittest.TestCase):
         self.assertEqual(1, lib._normalize_exit_code(1))
         self.assertEqual(129, lib._normalize_exit_code(-1))
 
-    @patch("hooked.library.cmd_util.sys.exit")
+    @patch("hooked.library.cmd.sys.exit")
     def test_exit_with_child_status(self, exit):
         lib.exit_with_child_status(-1)
         exit.assert_called_once_with(129)
 
-    @patch("hooked.library.cmd_util.sp.run")
+    @patch("hooked.library.cmd.sp.run")
     def test_run_cmd(self, run):
         cmd = ["foo", "bar", "baz"]
         cwd = "/home/batman"
@@ -73,20 +73,20 @@ class CmdUtilTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertEqual(result.stdout, "hello")
 
-    @patch("hooked.library.cmd_util.sp.run")
+    @patch("hooked.library.cmd.sp.run")
     def test_run_cmd_err(self, run):
         run.side_effect = FileNotFoundError()
         with self.assertRaises(lib.CommandError):
             lib.run_cmd([])
 
-    @patch("hooked.library.cmd_util.sp.run")
+    @patch("hooked.library.cmd.sp.run")
     def test_run_cmd_timeout(self, run):
         run.side_effect = subprocess.TimeoutExpired("", 1337)
         with self.assertRaises(lib.CommandError):
             lib.run_cmd([])
 
-    @patch("hooked.library.cmd_util.threading.Thread")
-    @patch("hooked.library.cmd_util.sp.Popen")
+    @patch("hooked.library.cmd.threading.Thread")
+    @patch("hooked.library.cmd.sp.Popen")
     def test_run_stream(self, popen, _):
         cmd = ["foo", "bar", "baz"]
         cwd = "/home/batman"
@@ -110,15 +110,15 @@ class CmdUtilTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertEqual(result.stdout, None)
 
-    @patch("hooked.library.cmd_util.threading.Thread")
-    @patch("hooked.library.cmd_util.sp.Popen")
+    @patch("hooked.library.cmd.threading.Thread")
+    @patch("hooked.library.cmd.sp.Popen")
     def test_run_stream_nok(self, popen, _):
         popen.return_value.wait.return_value = 1
         with self.assertRaises(lib.CommandError):
             lib.run_stream([])
 
-    @patch("hooked.library.cmd_util.threading.Thread")
-    @patch("hooked.library.cmd_util.sp.Popen")
+    @patch("hooked.library.cmd.threading.Thread")
+    @patch("hooked.library.cmd.sp.Popen")
     def test_run_stream_err(self, popen, _):
         popen.side_effect = FileNotFoundError()
         with self.assertRaises(lib.CommandError):

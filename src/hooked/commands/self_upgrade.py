@@ -29,27 +29,29 @@ from __future__ import annotations
 
 import click
 
-from hooked.library import logger
+from hooked.hooked import cli
+from hooked.library import upgrade
 
 
-@click.group()
-@click.option("-v", "--verbose", is_flag=True, help="Enables verbose mode")
-def cli(verbose):
-    """ConMob Hooked"""
-
-    # logging
-    level = "DEBUG" if verbose else "WARNING"
-    logger.set_log_level(level)
-
-
-@cli.command()
-def version():
+@cli.command("self-upgrade")
+@click.option(
+    "--reset",
+    is_flag=True,
+    help="Reset to latest semver release (stop tracking branch/SHA)",
+)
+@click.option(
+    "--freeze",
+    is_flag=True,
+    help="Freezes current installation to its branch/tag/sha (stops tracking branch)",
+)
+@click.argument(
+    "rev",
+    type=str,
+    required=False,
+    default=None,
+)
+def self_upgrade(reset: bool, freeze: bool, rev: str | None = None) -> None:
     """
-    Prints the version
+    Upgrade hooked installation
     """
-    try:
-        from ._version import version as __version__
-    except ImportError:
-        __version__ = "0+dev"
-
-    click.echo(f"Hooked version: {__version__}")
+    upgrade.self_upgrade(reset=reset, freeze=freeze, rev=rev)

@@ -25,31 +25,19 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
 from __future__ import annotations
 
 import click
 
-from hooked.library import logger
+from hooked.hooked import cli
+from hooked.library import install
 
 
-@click.group()
-@click.option("-v", "--verbose", is_flag=True, help="Enables verbose mode")
-def cli(verbose):
-    """ConMob Hooked"""
-
-    # logging
-    level = "DEBUG" if verbose else "WARNING"
-    logger.set_log_level(level)
-
-
-@cli.command()
-def version():
+@cli.command("disable")
+@click.option("-p", "--prune", is_flag=True, help="Prune local config from the system")
+def disable(prune: bool) -> None:
     """
-    Prints the version
+    Disable hooked on your system
     """
-    try:
-        from ._version import version as __version__
-    except ImportError:
-        __version__ = "0+dev"
-
-    click.echo(f"Hooked version: {__version__}")
+    install.disable(prune=prune)

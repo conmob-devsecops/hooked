@@ -33,7 +33,7 @@ pip install git+https://github.com/conmob-devsecops/hooked.git@main
 ```
 
 ⚠️ Some managed python environments (e.g., homebrew) don't allow you to install
-hooked via pip directly. Please read [installation manual](./docs/install.md)
+hooked via pip directly. Please read the [installation manual](./docs/install.md)
 for more details.
 
 By now hooked should be available on your shell. You may check the version of
@@ -41,7 +41,7 @@ hooked.
 
 ```bash
 $ hooked version
-Hooked version: 0.1.0
+Hooked version: 0.4.0
 ```
 
 Next, we need a rule set installed, for hooked to work. An example rule set can

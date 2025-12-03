@@ -29,27 +29,17 @@ from __future__ import annotations
 
 import click
 
-from hooked.library import logger
+from hooked.hooked import cli
+from hooked.library import config
 
 
-@click.group()
-@click.option("-v", "--verbose", is_flag=True, help="Enables verbose mode")
-def cli(verbose):
-    """ConMob Hooked"""
-
-    # logging
-    level = "DEBUG" if verbose else "WARNING"
-    logger.set_log_level(level)
-
-
-@cli.command()
-def version():
+@cli.command("update")
+@click.option(
+    "-f", "--force", is_flag=True, help="Force update by resetting local changes"
+)
+def update(force: bool) -> None:
     """
-    Prints the version
+    Update hooked rule set
     """
-    try:
-        from ._version import version as __version__
-    except ImportError:
-        __version__ = "0+dev"
-
-    click.echo(f"Hooked version: {__version__}")
+    config.update_config(force=force)
+    pass

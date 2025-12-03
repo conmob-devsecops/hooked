@@ -63,7 +63,7 @@ class InstallTests(unittest.TestCase):
         lib.install(rules=rules, branch=branch)
 
         copy_hooked_files.assert_called_once()
-        install_config.assert_called_once_with(get_base_dir(), rules, branch)
+        install_config.assert_called_once_with(repo=rules, branch=branch)
         git_set_global_hook_path.assert_called_once_with(get_hooks_dir())
         git_set_template_dir.assert_called_once_with(get_template_dir())
 
