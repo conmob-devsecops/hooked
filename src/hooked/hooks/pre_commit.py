@@ -108,8 +108,12 @@ def _run_internal_precommit(cwd: str) -> None:
         pre_commit.pre_commit_run(config=pre_commit_config, env=env, cwd=cwd)
     except CommandError as e:
         if not is_hook_error(e):
+            logger.warning(
+                "Pre-commit hooks failed. Please fix the issues and try again."
+            )
+            os._exit(1)
+        else:
             raise
-        logger.warning("Pre-commit hooks failed. Please fix the issues and try again.")
 
 
 def _do_autoupdate() -> None:
