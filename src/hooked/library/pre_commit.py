@@ -32,6 +32,7 @@ import os
 from hooked.library import install
 from hooked.library.cmd import CommandError, run_cmd, run_stream
 from hooked.library.logger import logger
+from hooked.library.utils import is_hook_error
 
 
 def pre_commit_version():
@@ -47,7 +48,8 @@ def pre_commit_run(
         _env["PRE_COMMIT_COLOR"] = "always"
         run_stream(["pre-commit", "run", "--config", config], env=_env, cwd=cwd)
     except CommandError as e:
-        logger.error(f"Error while run pre-commit: {e}")
+        if is_hook_error(e):
+            logger.error(f"Error while run pre-commit: {e}")
         raise
 
 
