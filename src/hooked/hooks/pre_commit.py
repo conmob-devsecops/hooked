@@ -65,7 +65,7 @@ def _normalize_cwd(cwd: str) -> str:
     if not cwd:
         raise RuntimeError("Missing required cwd argument")
 
-    cwd = str(Path(cwd[0]).resolve())
+    cwd = str(Path(cwd).resolve())
     if not os.path.exists(cwd):
         raise RuntimeError(f"Provided path {cwd} does not exist")
     if not os.path.isdir(cwd):
