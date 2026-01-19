@@ -48,7 +48,7 @@ def pre_commit_run(
         _env["PRE_COMMIT_COLOR"] = "always"
         run_stream(["pre-commit", "run", "--config", config], env=_env, cwd=cwd)
     except CommandError as e:
-        if is_hook_error(e):
+        if not is_hook_error(e):
             logger.error(f"Error while run pre-commit: {e}")
         raise
 

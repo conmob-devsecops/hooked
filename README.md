@@ -41,7 +41,8 @@ hooked.
 
 ```bash
 $ hooked version
-Hooked version: 0.4.2
+Hooked version: 0.4.3
+
 ```
 
 Next, we need a rule set installed, for hooked to work. An example rule set can

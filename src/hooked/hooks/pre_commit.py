@@ -99,15 +99,13 @@ def _check_autoupdate() -> bool:
 def _run_internal_precommit(cwd: str) -> None:
     logger.debug("Running internal pre-commit hooks...")
     config_dir = files.get_config_dir()
+    pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
+    env = os.environ.copy()
+    env["GITLEAKS_CONFIG"] = os.path.join(config_dir, ".gitleaks.toml")
     try:
-        pre_commit_config = os.path.join(config_dir, ".pre-commit-config.yaml")
-
-        env = os.environ.copy()
-        env["GITLEAKS_CONFIG"] = os.path.join(config_dir, ".gitleaks.toml")
-
         pre_commit.pre_commit_run(config=pre_commit_config, env=env, cwd=cwd)
     except CommandError as e:
-        if not is_hook_error(e):
+        if is_hook_error(e):
             logger.warning(
                 "Pre-commit hooks failed. Please fix the issues and try again."
             )
